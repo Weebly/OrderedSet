@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
 
   s.homepage     = "https://github.com/Weebly/OrderedSet"
 
-  s.license      = "MIT"
+  s.license      = { :type => "MIT", :file => "LICENSE" }
 
   s.author             = { "James Richard" => "james@weebly.com" }
   s.social_media_url   = "http://twitter.com/ketzusaka"
