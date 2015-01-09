@@ -21,5 +21,7 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/Weebly/OrderedSet.git", :tag => "v1.0.0" }
 
+  s.requires_arc = true
+
   s.source_files  = "Sources/*.{swift}"
 end
