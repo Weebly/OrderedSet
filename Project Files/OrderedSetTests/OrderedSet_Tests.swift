@@ -133,19 +133,22 @@ class OrderedSet_Tests: XCTestCase {
     
     func testRemove_whenObjectExists_reducesCount() {
         var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
-        subject.remove("Two")
+        var removedObject:OrderedSet.Index? = subject.remove("Two")
+        XCTAssert(removedObject == 1)
         XCTAssertEqual(subject.count, 2)
     }
     
     func testRemove_whenObjectDoesntExist_doesntChangeCount() {
         var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
-        subject.remove("Twoz")
+        var removedObject:OrderedSet.Index? = subject.remove("Twoz")
+        XCTAssertNil(removedObject)
         XCTAssertEqual(subject.count, 3)
     }
     
     func testRemove_whenObjectIsNotLast_updatesOrdering() {
         var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
-        subject.remove("Two")
+        var removedObject:OrderedSet.Index? = subject.remove("Two")
+        XCTAssert(removedObject == 1)
         XCTAssert(subject[0] == "One")
         XCTAssert(subject[1] == "Three")
         XCTAssert(subject[2] == "Four")
@@ -164,7 +167,8 @@ class OrderedSet_Tests: XCTestCase {
     
     func testRemoveObjectAtIndex_removesTheObjectAtIndex() {
         var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
-        subject.removeObjectAtIndex(1)
+        var removedObject:String? = subject.removeObjectAtIndex(1)
+        XCTAssert(removedObject == "Two")
         let expected: OrderedSet<String> = ["One", "Three", "Four"]
         XCTAssertEqual(subject, expected)
     }
