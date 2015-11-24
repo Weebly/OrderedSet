@@ -345,6 +345,8 @@ public struct OrderedSet<T: Hashable> : ArrayLiteralConvertible {
 	}
 }
 
+extension OrderedSet where T: Comparable {}
+
 extension OrderedSet: MutableCollectionType {
 	public typealias Index = Int
 
@@ -389,6 +391,8 @@ public struct OrderedSetGenerator<T: Hashable>: GeneratorType {
 		return generator.next()?.memory
 	}
 }
+
+extension OrderedSetGenerator where T: Comparable {}
 
 public func +<T: Hashable, S: SequenceType where S.Generator.Element == T> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> {
 	var joinedSet = lhs
