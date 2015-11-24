@@ -159,6 +159,7 @@
 		1ABC4FAF1A5C966200DC4F4D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Weebly;
 				TargetAttributes = {
