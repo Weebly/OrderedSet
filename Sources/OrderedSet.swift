@@ -7,7 +7,7 @@
 //
 
 /// An ordered, unique collection of objects.
-public struct OrderedSet<T: Hashable> {
+public struct OrderedSet<T: Hashable> : ArrayLiteralConvertible {
 	private var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
 	private var sequencedContents = Array<UnsafeMutablePointer<T>>()
 
@@ -40,6 +40,19 @@ public struct OrderedSet<T: Hashable> {
 		}
 	}
 
+	// FIXME: putting this in an ArrayLiteralConvertible extension is now crashing the compiler, move it back when fixed
+	public init(arrayLiteral elements: T...) {
+		for object in elements {
+			if contents[object] == nil {
+				contents[object] = contents.count
+
+				let pointer = UnsafeMutablePointer<T>.alloc(1)
+				pointer.initialize(object)
+				sequencedContents.append(pointer)
+			}
+		}
+	}
+
 
 	/**
 	Locate the index of an object in the ordered set.
@@ -56,26 +69,6 @@ public struct OrderedSet<T: Hashable> {
 
 		return nil
 	}
-//
-//	/// The number of objects contained in the ordered set.
-//	public var count: Int {
-//		return contents.count
-//	}
-
-//	/// Whether the ordered set has any objects or not.
-//	public var isEmpty: Bool {
-//		return count == 0
-//	}
-
-//	/**
-//	Tests if the ordered set contains an object or not.
-//
-//	:param:     object  The object to search for.
-//	:return:    true if the object exists in the ordered set, otherwise false.
-//	*/
-//	public func contains(object: T) -> Bool {
-//		return contents[object] != nil
-//	}
 
 	/**
 	Appends an object to the end of the ordered set.
@@ -165,34 +158,6 @@ public struct OrderedSet<T: Hashable> {
 		contents.removeAll()
 		sequencedContents.removeAll()
 	}
-
-//	/**
-//	Return an OrderedSet containing the results of calling
-//	`transform(x)` on each element `x` of `self`
-//
-//	:param:     transform   A closure that is called for each element in the ordered set.
-//	The result of the closure is appended to the new ordered set.
-//	:result:     An ordered set containing the result of `transform(x)` on each element.
-//	*/
-//	public func map<U: Hashable>(transform: (T) -> U) -> OrderedSet<U> {
-//		var result = OrderedSet<U>()
-//
-//		for object in self {
-//			result.append(transform(object))
-//		}
-//
-//		return result
-//	}
-
-//	/// The first object in the ordered set, or nil if it is empty.
-//	public var first: T? {
-//		return count > 0 ? self[0] : nil
-//	}
-//
-//	/// The last object in the ordered set, or nil if it is empty.
-//	public var last: T? {
-//		return count > 0 ? self[count - 1] : nil
-//	}
 
 	/**
 	Swaps two objects contained within the ordered set.
@@ -388,24 +353,9 @@ extension OrderedSet: MutableCollectionType {
 	}
 
 	public var endIndex: Int {
-		return count
+		return contents.count
 	}
 
-	/**
-	Replace, remove, or retrieve an object in the ordered set.
-
-	When setting an index to nil the object will be removed. If
-	it is not the last object in the set, all subsequent objects
-	will be shifted down one position.
-
-	When setting an index to another object, the existing object
-	at that index will be removed. If you attempt to set an index
-	that does not currently have an object, this is a no-op.
-
-	:param:     index   The index to retrieve or set.
-	:return:   On get operations, the object at the specified index, or nil
-	if no object exists at that index.
-	*/
 	public subscript(index: Index) -> T {
 		get {
 			return sequencedContents[index].memory
@@ -437,20 +387,6 @@ public struct OrderedSetGenerator<T: Hashable>: GeneratorType {
 
 	mutating public func next() -> Element? {
 		return generator.next()?.memory
-	}
-}
-
-extension OrderedSet: ArrayLiteralConvertible {
-	public init(arrayLiteral elements: T...) {
-		for object in elements {
-			if contents[object] == nil {
-				contents[object] = contents.count
-
-				let pointer = UnsafeMutablePointer<T>.alloc(1)
-				pointer.initialize(object)
-				sequencedContents.append(pointer)
-			}
-		}
 	}
 }
 
