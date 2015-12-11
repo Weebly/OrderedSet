@@ -143,9 +143,12 @@ public struct OrderedSet<T: Hashable> {
         objects will be shifted down one position.
     
         :param:     object  The object to be removed.
-    */
-    mutating public func remove(object: T) {
+         :return:    Index if OrderSet contains object, else nil.
+ */
+    mutating public func remove(object: T) -> Index?{
+        var returnIndex: Index?
         if let index = contents[object] {
+            returnIndex = index
             contents[object] = nil
             sequencedContents[index].dealloc(1)
             sequencedContents.removeAtIndex(index)
@@ -158,6 +161,7 @@ public struct OrderedSet<T: Hashable> {
                 contents[object] = i - 1
             }
         }
+        return returnIndex
     }
     
     /**
@@ -176,15 +180,18 @@ public struct OrderedSet<T: Hashable> {
         Removes an object at a given index.
 
         This method will cause a fatal error if you attempt to move an object to an index that is out of bounds.
-        
+    
         :param:     index       The index of the object to be removed.
-    */
-    mutating public func removeObjectAtIndex(index: Index) {
+        :return:    Object that was removed.
+*/
+    mutating public func removeObjectAtIndex(index: Index) ->T{
         if index < 0 || index >= count {
             fatalError("Attempting to remove an object at an index that does not exist")
         }
         
-        remove(sequencedContents[index].memory)
+        let returnObject = sequencedContents[index].memory
+        remove(returnObject)
+        return returnObject
     }
     
     /**
