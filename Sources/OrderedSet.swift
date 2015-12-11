@@ -3,7 +3,7 @@
 //  Weebly
 //
 //  Created by James Richard on 10/22/14.
-//  Copyright (c) 2014 Weebly. All rights reserved.
+//  Copyright (c) 2014 Weebly.
 //
 
 /// An ordered, unique collection of objects.
