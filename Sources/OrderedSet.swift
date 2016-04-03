@@ -78,7 +78,7 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
         if let lastIndex = indexOfObject(object) {
             remove(object)
             insertObject(object, atIndex: lastIndex)
-        }else{
+        } else {
             contents[object] = contents.count
             let pointer = UnsafeMutablePointer<T>.alloc(1)
             pointer.initialize(object)
