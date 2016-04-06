@@ -10,6 +10,8 @@ import XCTest
 import OrderedSet
 
 class OrderedSet_Tests: XCTestCase {
+
+	//TODO: add tests for more Swift 2.x default SequenceType and Collection implementations
     
     // MARK: Count
     
@@ -71,7 +73,7 @@ class OrderedSet_Tests: XCTestCase {
     }
 
     func testContains_whenObjectIsNotContained_isFalse() {
-        var subject = OrderedSet<String>()
+        let subject = OrderedSet<String>()
         XCTAssertFalse(subject.contains("Test"))
     }
     
@@ -180,29 +182,29 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Intersects Sequence
     
     func testIntersectsSequence_withoutIntersection_isFalse() {
-        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         XCTAssertFalse(subject.intersectsSequence(["Four"]))
     }
     
     func testIntersectsSequence_withIntersection_isTrue() {
-        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         XCTAssertTrue(subject.intersectsSequence(["Two"]))
     }
     
     // MARK: Is Subset Of Sequence
     
     func testIsSubsetOfSequence_whenIsSubset_isTrue() {
-        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         XCTAssertTrue(subject.isSubsetOfSequence(["Three", "Two", "One"]))
     }
     
     func testIsSubsetOfSequence_whenIsSubset_andContainsDuplicates_isTrue() {
-        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         XCTAssertTrue(subject.isSubsetOfSequence(["Three", "Two", "One", "Three"]))
     }
     
     func testIsSubsetOfSequence_whenIsNotSubset_isFalse() {
-        var subject = OrderedSet<String>(sequence: ["One", "Two"])
+        let subject = OrderedSet<String>(sequence: ["One", "Two"])
         XCTAssertTrue(subject.isSubsetOfSequence(["Three", "Two", "One"]))
     }
     
@@ -229,7 +231,7 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Decatenate
     
     func testDecatenate_removesMatchedObjects() {
-        var subject: OrderedSet<String> = ["One", "Two", "Three"]
+        let subject: OrderedSet<String> = ["One", "Two", "Three"]
         let second: OrderedSet<String> = ["One", "Three"]
         let result = subject - second
         XCTAssertEqual(result.count, 1)
@@ -249,8 +251,8 @@ class OrderedSet_Tests: XCTestCase {
     func testMap_mapsEachObject() {
         let subject: OrderedSet<String> = ["One", "Two", "Three"]
         let result = subject.map { $0.hashValue }
-        let expected: OrderedSet<Int> = ["One".hashValue, "Two".hashValue, "Three".hashValue]
-        XCTAssertEqual(result, expected)
+        let expected = ["One".hashValue, "Two".hashValue, "Three".hashValue]
+        XCTAssertTrue(result == expected)
     }
     
     // MARK: Equality
@@ -483,7 +485,7 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Description
     
     func testDescription_printsDescription() {
-        var subject: OrderedSet<String> = ["One", "Two", "Three"]
+        let subject: OrderedSet<String> = ["One", "Two", "Three"]
         XCTAssertEqual(subject.description, "OrderedSet (3 object(s)): [One, Two, Three]")
     }
     
