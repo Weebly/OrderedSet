@@ -315,7 +315,7 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
                 element.initialize(object)
                 sequencedContents.insert(element, atIndex: seqIdx)
                 contents[object] = seqIdx
-                addedObjectCount++
+                addedObjectCount += 1
             }
         }
         
