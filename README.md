@@ -12,7 +12,7 @@ set.append(1)
 set.contains(1) // => true
 set[0] = 2
 set[0] // => 2
-set.insertObject(3, atIndex: 0)
+set.insert(3, at: 0)
 set // => [3, 2]
 set = [1,2,3] // OrderedSet's support array literals
 set // => [1, 2, 3]
@@ -29,7 +29,7 @@ Be sure to check out the unit tests to see all the different ways to interact wi
 OrderedSet is a single Swift file in the Sources directory. You can copy that file into your project, or use CocoaPods by adding the following line to your Podfile:
 
 ```ruby
-pod 'OrderedSet', '1.0'
+pod 'OrderedSet', '2.0'
 ```
 
 And then add the following import where you want to use OrderedSet:
