@@ -252,8 +252,8 @@ open class OrderedSet<T: Hashable> {
      This method is a no-op if the index is the same that the object is currently at.
      This method will cause a fatal error if you attempt to move an object fro man index that is out of bounds
      or to an index that is out of bounds.
-     -parameter     index:      The index of the object to be moved.
-     -parameter     toIndex:    The index that the object should be moved to.
+     - parameter     index:      The index of the object to be moved.
+     - parameter     toIndex:    The index that the object should be moved to.
      */
     public func moveObject(at index: Index, to toIndex: Index) {
         if ((index < 0 || index >= count) || (toIndex < 0 || toIndex >= count)) {
@@ -319,13 +319,14 @@ open class OrderedSet<T: Hashable> {
             contents[sequencedContents[i].pointee] = i
         }
     }
+
+    /// Returns the last object in the set, or `nil` if the set is empty.
+    public var last: T? {
+        return sequencedContents.last?.pointee
+    }
 }
 
-extension OrderedSet: ExpressibleByArrayLiteral {
-
-
-
-}
+extension OrderedSet: ExpressibleByArrayLiteral { }
 
 extension OrderedSet where T: Comparable {}
 
@@ -356,24 +357,7 @@ extension OrderedSet: MutableCollection {
             sequencedContents[index].pointee = newValue
         }
     }
-}
 
-extension OrderedSet: BidirectionalCollection {
-
-    public func index(before i: Index) -> Int {
-        return sequencedContents.index(before: i)
-    }
-
-    public subscript(bounds: Range<Int>) -> BidirectionalSlice<OrderedSet<T>> {
-        get {
-            return BidirectionalSlice(base: self, bounds: bounds)
-        }
-        set {
-            for (index, _) in sequencedContents[bounds].enumerated() {
-                self[index] = newValue[index]
-            }
-        }
-    }
 }
 
 extension  OrderedSet: Sequence {

@@ -303,7 +303,7 @@ class OrderedSet_Tests: XCTestCase {
     
     func testLast_whenEmpty_isNil() {
         let subject = OrderedSet<String>()
-        XCTAssert(subject.first == nil)
+        XCTAssert(subject.last == nil)
     }
     
     func testLast_whenNotEmpty_isFirstElement() {
