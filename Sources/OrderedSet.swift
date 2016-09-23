@@ -7,7 +7,7 @@
 //
 
 /// An ordered, unique collection of objects.
-open class OrderedSet<T: Hashable> {
+public class OrderedSet<T: Hashable> {
     fileprivate var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
     fileprivate var sequencedContents = Array<UnsafeMutablePointer<T>>()
     
@@ -370,7 +370,7 @@ extension  OrderedSet: Sequence {
 
 public struct OrderedSetGenerator<T: Hashable>: IteratorProtocol {
     public typealias Element = T
-    fileprivate var generator: IndexingIterator<Array<UnsafeMutablePointer<T>>>
+    private var generator: IndexingIterator<Array<UnsafeMutablePointer<T>>>
     
     public init(set: OrderedSet<T>) {
         generator = set.sequencedContents.makeIterator()
