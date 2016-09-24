@@ -7,13 +7,13 @@
 //
 
 /// An ordered, unique collection of objects.
-public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
-    private var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
-    private var sequencedContents = Array<UnsafeMutablePointer<T>>()
+public class OrderedSet<T: Hashable> {
+    fileprivate var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
+    fileprivate var sequencedContents = Array<UnsafeMutablePointer<T>>()
     
     /**
      Inititalizes an empty ordered set.
-     :return: An empty ordered set.
+     - returns:     An empty ordered set.
      */
     public init() { }
     
@@ -26,42 +26,40 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
      of sequence.
      If an object appears more than once in the sequence it will only appear
      once in the ordered set, at the position of its first occurance.
-     :param: sequence The sequence to initialize the ordered set with.
-     :return: An initialized ordered set with the contents of sequence.
+     - parameter    sequence:   The sequence to initialize the ordered set with.
+     - returns:                 An initialized ordered set with the contents of sequence.
      */
-    public init<S: SequenceType where S.Generator.Element == T>(sequence: S) {
+    public init<S: Sequence>(sequence: S) where S.Iterator.Element == T {
         for object in sequence {
             if contents[object] == nil {
                 contents[object] = contents.count
                 
-                let pointer = UnsafeMutablePointer<T>.alloc(1)
-                pointer.initialize(object)
+                let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
+                pointer.initialize(to: object)
                 sequencedContents.append(pointer)
             }
         }
     }
-    
-    // FIXME: putting this in an ArrayLiteralConvertible extension is now crashing the compiler, move it back when fixed
+
     public required init(arrayLiteral elements: T...) {
         for object in elements {
             if contents[object] == nil {
                 contents[object] = contents.count
                 
-                let pointer = UnsafeMutablePointer<T>.alloc(1)
-                pointer.initialize(object)
+                let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
+                pointer.initialize(to: object)
                 sequencedContents.append(pointer)
             }
         }
     }
     
-    
     /**
      Locate the index of an object in the ordered set.
      It is preferable to use this method over the global find() for performance reasons.
-     :param:     object      The object to find the index for.
-     :return:    The index of the object, or nil if the object is not in the ordered set.
+     - parameter    object: The object to find the index for.
+     - returns:             The index of the object, or nil if the object is not in the ordered set.
      */
-    public func indexOfObject(object: T) -> Index? {
+    public func index(of object: T) -> Index? {
         if let index = contents[object] {
             return index
         }
@@ -71,27 +69,27 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
     
     /**
      Appends an object to the end of the ordered set.
-     :param:     object  The object to be appended.
+     - parameter    object: The object to be appended.
      */
-    public func append(object: T) {
+    public func append(_ object: T) {
         
-        if let lastIndex = indexOfObject(object) {
+        if let lastIndex = index(of: object) {
             remove(object)
-            insertObject(object, atIndex: lastIndex)
+            insert(object, at: lastIndex)
         } else {
             contents[object] = contents.count
-            let pointer = UnsafeMutablePointer<T>.alloc(1)
-            pointer.initialize(object)
+            let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
+            pointer.initialize(to: object)
             sequencedContents.append(pointer)
         }
     }
     
     /**
      Appends a sequence of objects to the end of the ordered set.
-     :param:     objects  The objects to be appended.
+     - parameter    sequence:   The sequence of objects to be appended.
      */
-    public func appendObjects<S: SequenceType where S.Generator.Element == T>(objects: S) {
-        var gen = objects.generate()
+    public func append<S: Sequence>(contentsOf sequence: S) where S.Iterator.Element == T {
+        var gen = sequence.makeIterator()
         while let object: T = gen.next() {
             append(object)
         }
@@ -102,13 +100,13 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
      If the object exists in the ordered set, it will be removed.
      If it is not the last object in the ordered set, subsequent
      objects will be shifted down one position.
-     :param:     object  The object to be removed.
+     - parameter    object: The object to be removed.
      */
-    public func remove(object: T) {
+    public func remove(_ object: T) {
         if let index = contents[object] {
             contents[object] = nil
-            sequencedContents[index].dealloc(1)
-            sequencedContents.removeAtIndex(index)
+            sequencedContents[index].deallocate(capacity: 1)
+            sequencedContents.remove(at: index)
             
             for (object, i) in contents {
                 if i < index {
@@ -122,10 +120,10 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
     
     /**
      Removes the given objects from the ordered set.
-     :param:     objects     The objects to be removed.
+     - parameter    objects:    The objects to be removed.
      */
-    public func removeObjects<S: SequenceType where S.Generator.Element == T>(objects: S) {
-        var gen = objects.generate()
+    public func remove<S: Sequence>(_ objects: S) where S.Iterator.Element == T {
+        var gen = objects.makeIterator()
         while let object: T = gen.next() {
             remove(object)
         }
@@ -134,14 +132,14 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
     /**
      Removes an object at a given index.
      This method will cause a fatal error if you attempt to move an object to an index that is out of bounds.
-     :param:     index       The index of the object to be removed.
+     - parameter    index:  The index of the object to be removed.
      */
-    public func removeObjectAtIndex(index: Index) {
+    public func removeObject(at index: Index) {
         if index < 0 || index >= count {
             fatalError("Attempting to remove an object at an index that does not exist")
         }
         
-        remove(sequencedContents[index].memory)
+        remove(sequencedContents[index].pointee)
     }
     
     /**
@@ -151,7 +149,7 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
         contents.removeAll()
         
         for sequencedContent in sequencedContents {
-            sequencedContent.dealloc(1)
+            sequencedContent.deallocate(capacity: 1)
         }
         
         sequencedContents.removeAll()
@@ -160,28 +158,28 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
     /**
      Swaps two objects contained within the ordered set.
      Both objects must exist within the set, or the swap will not occur.
-     :param:     first   The first object to be swapped.
-     :param:     second  The second object to be swapped.
+     - parameter    first:  The first object to be swapped.
+     - parameter    second: The second object to be swapped.
      */
-    public func swapObject(first: T, withObject second: T) {
+    public func swapObject(_ first: T, with second: T) {
         if let firstPosition = contents[first] {
             if let secondPosition = contents[second] {
                 contents[first] = secondPosition
                 contents[second] = firstPosition
                 
-                sequencedContents[firstPosition].memory = second
-                sequencedContents[secondPosition].memory = first
+                sequencedContents[firstPosition].pointee = second
+                sequencedContents[secondPosition].pointee = first
             }
         }
     }
     
     /**
      Tests if the ordered set contains any objects within a sequence.
-     :param:     sequence    The sequence to look for the intersection in.
-     :return:    Returns true if the sequence and set contain any equal objects, otherwise false.
+     - parameter    other:  The sequence to look for the intersection in.
+     - returns:             Returns true if the sequence and set contain any equal objects, otherwise false.
      */
-    public func intersectsSequence<S: SequenceType where S.Generator.Element == T>(sequence: S) -> Bool {
-        var gen = sequence.generate()
+    public func intersects<S: Sequence>(_ other: S) -> Bool where S.Iterator.Element == T {
+        var gen = other.makeIterator()
         while let object: T = gen.next() {
             if contains(object) {
                 return true
@@ -193,10 +191,10 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
     
     /**
      Tests if a the ordered set is a subset of another sequence.
-     :param:     sequence    The sequence to check.
-     :return:    true if the sequence contains all objects contained in the receiver, otherwise false.
+     - parameter    sequence:   The sequence to check.
+     - returns:                 true if the sequence contains all objects contained in the receiver, otherwise false.
      */
-    public func isSubsetOfSequence<S: SequenceType where S.Generator.Element == T>(sequence: S) -> Bool {
+    public func isSubset<S: Sequence>(of sequence: S) -> Bool where S.Iterator.Element == T {
         for (object, _) in contents {
             if !sequence.contains(object) {
                 return false
@@ -211,10 +209,10 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
      This method is a no-op if the object doesn't exist in the set or the index is the
      same that the object is currently at.
      This method will cause a fatal error if you attempt to move an object to an index that is out of bounds.
-     :param:     object  The object to be moved
-     :param:     index   The index that the object should be moved to.
+     - parameter    object: The object to be moved
+     - parameter    index:  The index that the object should be moved to.
      */
-    public func moveObject(object: T, toIndex index: Index) {
+    public func moveObject(_ object: T, toIndex index: Index) {
         if index < 0 || index >= count {
             fatalError("Attempting to move an object at an index that does not exist")
         }
@@ -229,18 +227,18 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
             let range = index < position ? index..<position : position..<index
             for (object, i) in contents {
                 // Skip items not within the range of movement
-                if i < range.startIndex || i > range.endIndex || i == position {
+                if i < range.lowerBound || i > range.upperBound || i == position {
                     continue
                 }
                 
                 let originalIndex = contents[object]!
                 let newIndex = i + adjustment
                 
-                let firstObject = sequencedContents[originalIndex].memory
-                let secondObject = sequencedContents[newIndex].memory
+                let firstObject = sequencedContents[originalIndex].pointee
+                let secondObject = sequencedContents[newIndex].pointee
                 
-                sequencedContents[originalIndex].memory = secondObject
-                sequencedContents[newIndex].memory = firstObject
+                sequencedContents[originalIndex].pointee = secondObject
+                sequencedContents[newIndex].pointee = firstObject
                 
                 contents[object] = newIndex
             }
@@ -254,10 +252,10 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
      This method is a no-op if the index is the same that the object is currently at.
      This method will cause a fatal error if you attempt to move an object fro man index that is out of bounds
      or to an index that is out of bounds.
-     :param:     index   The index of the object to be moved.
-     :param:     toIndex   The index that the object should be moved to.
+     - parameter     index:      The index of the object to be moved.
+     - parameter     toIndex:    The index that the object should be moved to.
      */
-    public func moveObjectAtIndex(index: Index, toIndex: Index) {
+    public func moveObject(at index: Index, to toIndex: Index) {
         if ((index < 0 || index >= count) || (toIndex < 0 || toIndex >= count)) {
             fatalError("Attempting to move an object at or to an index that does not exist")
         }
@@ -269,10 +267,10 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
      Inserts an object at a given index, shifting all objects above it up one.
      This method will cause a fatal error if you attempt to insert the object out of bounds.
      If the object already exists in the OrderedSet, this operation is a no-op.
-     :param:     object      The object to be inserted.
-     :param:     atIndex     The index to be inserted at.
+     - parameter    object:     The object to be inserted.
+     - parameter    index:      The index to be inserted at.
      */
-    public func insertObject(object: T, atIndex index: Index) {
+    public func insert(_ object: T, at index: Index) {
         if index > count || index < 0 {
             fatalError("Attempting to insert an object at an index that does not exist")
         }
@@ -284,8 +282,8 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
         // Append our object, then swap them until its at the end.
         append(object)
         
-        for i in (index..<count-1).reverse() {
-            swapObject(self[i], withObject: self[i+1])
+        for i in (index..<count-1).reversed() {
+            swapObject(self[i], with: self[i+1])
         }
     }
     
@@ -294,26 +292,22 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
      This method will cause a fatal error if you attempt to insert the objects out of bounds.
      If an object in objects already exists in the OrderedSet it will not be added. Objects that occur twice
      in the sequence will only be added once.
-     :param:     objects      The objects to be inserted.
-     :param:     atIndex      The index to be inserted at.
+     - parameter    objects:    The objects to be inserted.
+     - parameter    index:      The index to be inserted at.
      */
-    public func insertObjects<S: SequenceType where S.Generator.Element == T>(objects: S, atIndex index: Index) {
+    public func insert<S: Sequence>(_ objects: S, at index: Index) where S.Iterator.Element == T {
         if index > count || index < 0 {
             fatalError("Attempting to insert an object at an index that does not exist")
         }
         
         var addedObjectCount = 0
-        // FIXME: For some reason, Swift gives the error "Cannot convert the expression's type 'S' to type 'S'" with a regular for-in, so this is a hack to fix that.
-        var gen = objects.generate()
-        
-        // This loop will make use of our sequncedContents array to update the contents dictionary's
-        // values. During this loop there will be duplicate values in the dictionary.
-        while let object: T = gen.next() {
+
+        for object in objects {
             if contents[object] == nil {
                 let seqIdx = index + addedObjectCount
-                let element = UnsafeMutablePointer<T>.alloc(1)
-                element.initialize(object)
-                sequencedContents.insert(element, atIndex: seqIdx)
+                let element = UnsafeMutablePointer<T>.allocate(capacity: 1)
+                element.initialize(to: object)
+                sequencedContents.insert(element, at: seqIdx)
                 contents[object] = seqIdx
                 addedObjectCount += 1
             }
@@ -322,14 +316,26 @@ public class OrderedSet<T: Hashable> : ArrayLiteralConvertible {
         // Now we'll remove duplicates and update the shifted objects position in the contents
         // dictionary.
         for i in index + addedObjectCount..<count {
-            contents[sequencedContents[i].memory] = i
+            contents[sequencedContents[i].pointee] = i
         }
+    }
+
+    /// Returns the last object in the set, or `nil` if the set is empty.
+    public var last: T? {
+        return sequencedContents.last?.pointee
     }
 }
 
+extension OrderedSet: ExpressibleByArrayLiteral { }
+
 extension OrderedSet where T: Comparable {}
 
-extension OrderedSet: MutableCollectionType {
+extension OrderedSet: MutableCollection {
+
+    public func index(after i: Int) -> Int {
+        return sequencedContents.index(after: i)
+    }
+
     public typealias Index = Int
     
     public var startIndex: Int {
@@ -342,60 +348,61 @@ extension OrderedSet: MutableCollectionType {
     
     public subscript(index: Index) -> T {
         get {
-            return sequencedContents[index].memory
+            return sequencedContents[index].pointee
         }
         
         set {
-            contents[sequencedContents[index].memory] = nil
+            contents[sequencedContents[index].pointee] = nil
             contents[newValue] = index
-            sequencedContents[index].memory = newValue
+            sequencedContents[index].pointee = newValue
         }
     }
+
 }
 
-extension  OrderedSet: SequenceType {
-    public typealias Generator = OrderedSetGenerator<T>
+extension  OrderedSet: Sequence {
+    public typealias Iterator = OrderedSetGenerator<T>
     
-    public func generate() -> Generator {
+    public func makeIterator() -> Iterator {
         return OrderedSetGenerator(set: self)
     }
 }
 
-public struct OrderedSetGenerator<T: Hashable>: GeneratorType {
+public struct OrderedSetGenerator<T: Hashable>: IteratorProtocol {
     public typealias Element = T
-    private var generator: IndexingGenerator<Array<UnsafeMutablePointer<T>>>
+    private var generator: IndexingIterator<Array<UnsafeMutablePointer<T>>>
     
     public init(set: OrderedSet<T>) {
-        generator = set.sequencedContents.generate()
+        generator = set.sequencedContents.makeIterator()
     }
     
     public mutating func next() -> Element? {
-        return generator.next()?.memory
+        return generator.next()?.pointee
     }
 }
 
 extension OrderedSetGenerator where T: Comparable {}
 
-public func +<T: Hashable, S: SequenceType where S.Generator.Element == T> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> {
+public func +<T: Hashable, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Iterator.Element == T {
     let joinedSet = lhs
-    joinedSet.appendObjects(rhs)
+    joinedSet.append(contentsOf: rhs)
     
     return joinedSet
 }
 
-public func +=<T: Hashable, S: SequenceType where S.Generator.Element == T> (inout lhs: OrderedSet<T>, rhs: S) {
-    lhs.appendObjects(rhs)
+public func +=<T: Hashable, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Iterator.Element == T {
+    lhs.append(contentsOf: rhs)
 }
 
-public func -<T: Hashable, S: SequenceType where S.Generator.Element == T> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> {
+public func -<T: Hashable, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Iterator.Element == T {
     let purgedSet = lhs
-    purgedSet.removeObjects(rhs)
+    purgedSet.remove(rhs)
     
     return purgedSet
 }
 
-public func -=<T: Hashable, S: SequenceType where S.Generator.Element == T> (inout lhs: OrderedSet<T>, rhs: S) {
-    lhs.removeObjects(rhs)
+public func -=<T: Hashable, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Iterator.Element == T {
+    lhs.remove(rhs)
 }
 
 extension OrderedSet: Equatable { }
@@ -416,7 +423,7 @@ public func ==<T: Hashable> (lhs: OrderedSet<T>, rhs: OrderedSet<T>) -> Bool {
 
 extension OrderedSet: CustomStringConvertible {
     public var description: String {
-        let children = map({ "\($0)" }).joinWithSeparator(", ")
+        let children = map({ "\($0)" }).joined(separator: ", ")
         return "OrderedSet (\(count) object(s)): [\(children)]"
     }
 }
