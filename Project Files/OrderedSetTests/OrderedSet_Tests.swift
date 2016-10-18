@@ -64,6 +64,19 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssert(subject[2] == "Three")
     }
     
+    func testSubscriptSetting_iteratesCorrectly() {
+        let subject: OrderedSet<Int> = [0, 1, 2]
+        subject[1] = 0
+        var contents = [Int]()
+        for i in subject {
+            contents.append(i)
+        }
+        
+        XCTAssertEqual(contents.count, 2)
+        XCTAssertEqual(contents[0], 0)
+        XCTAssertEqual(contents[1], 2)
+    }
+    
     // MARK: Contains
 
     func testContains_whenObjectIsContained_isTrue() {

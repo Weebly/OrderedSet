@@ -352,9 +352,16 @@ extension OrderedSet: MutableCollection {
         }
         
         set {
+            let previousCount = contents.count
             contents[sequencedContents[index].pointee] = nil
             contents[newValue] = index
-            sequencedContents[index].pointee = newValue
+            
+            // If the count is reduced we used an existing value, and need to sync up sequencedContents
+            if contents.count == previousCount {
+                sequencedContents[index].pointee = newValue
+            } else {
+                sequencedContents.remove(at: index)
+            }
         }
     }
 
