@@ -330,7 +330,11 @@ extension OrderedSet: ExpressibleByArrayLiteral { }
 
 extension OrderedSet where T: Comparable {}
 
-extension OrderedSet: MutableCollection {
+extension OrderedSet {
+    
+    public var count: Int {
+        return contents.count
+    }
 
     public func index(after i: Int) -> Int {
         return sequencedContents.index(after: i)
