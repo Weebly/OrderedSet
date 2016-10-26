@@ -335,6 +335,15 @@ extension OrderedSet {
     public var count: Int {
         return contents.count
     }
+    
+    public var isEmpty: Bool {
+        return count == 0
+    }
+    
+    public var first: T? {
+        guard count > 0 else { return nil }
+        return sequencedContents[0].pointee
+    }
 
     public func index(after i: Int) -> Int {
         return sequencedContents.index(after: i)
