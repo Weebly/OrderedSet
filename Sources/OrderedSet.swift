@@ -224,14 +224,16 @@ public class OrderedSet<T: Hashable> {
             }
             
             let adjustment = position < index ? -1 : 1
-            let range = index < position ? index..<position : position..<index
-            for (object, i) in contents {
-                // Skip items not within the range of movement
-                if i < range.lowerBound || i > range.upperBound || i == position {
+            let range = index < position ? index...position : position...index
+            let originalSequencedContents = sequencedContents.map { $0.pointee }
+            
+            for i in range {
+                if i == position {
                     continue
                 }
                 
-                let originalIndex = contents[object]!
+                let o = originalSequencedContents[i]
+                let originalIndex = contents[o]!
                 let newIndex = i + adjustment
                 
                 let firstObject = sequencedContents[originalIndex].pointee
@@ -240,7 +242,7 @@ public class OrderedSet<T: Hashable> {
                 sequencedContents[originalIndex].pointee = secondObject
                 sequencedContents[newIndex].pointee = firstObject
                 
-                contents[object] = newIndex
+                contents[o] = newIndex
             }
             
             contents[object] = index

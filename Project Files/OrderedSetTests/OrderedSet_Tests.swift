@@ -419,6 +419,12 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssertEqual(subject, expected)
     }
     
+    func testMoveObjectAtIndex_withMultipleMoves_thenMapped_worksCorrectly() {
+        let subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
+        subject.moveObject("One", toIndex: 4)
+        XCTAssertEqual(subject.map { $0 }, ["Two", "Three", "Four", "Five", "One"])
+    }
+    
     // MARK: Insert Object at Index
     
     func testInsertObjectAtIndex_whenObjectDoesntExist_insertsObjectAtCorrectSpot() {
