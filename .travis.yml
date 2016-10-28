@@ -1,5 +1,6 @@
 language: objective-c
 osx_image: xcode8
+oextra_user_id: Descending"
 xcode_projec: Project Files/OrderedSet.xcodeproj
 xcode_scheme: OrderedSet
 xcode_sdk: iphonesimulator10.0
