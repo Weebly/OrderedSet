@@ -223,29 +223,23 @@ public class OrderedSet<T: Hashable> {
                 return
             }
             
-            let adjustment = position < index ? -1 : 1
-            let range = index < position ? index...position : position...index
-            let originalSequencedContents = sequencedContents.map { $0.pointee }
+            let adjustment = position > index ? -1 : 1
             
-            for i in range {
-                if i == position {
-                    continue
-                }
+            var currentIndex = position
+            while currentIndex != index {
+                let nextIndex = currentIndex + adjustment
                 
-                let o = originalSequencedContents[i]
-                let originalIndex = contents[o]!
-                let newIndex = i + adjustment
+                let firstObject = sequencedContents[currentIndex].pointee
+                let secondObject = sequencedContents[nextIndex].pointee
                 
-                let firstObject = sequencedContents[originalIndex].pointee
-                let secondObject = sequencedContents[newIndex].pointee
+                sequencedContents[currentIndex].pointee = secondObject
+                sequencedContents[nextIndex].pointee = firstObject
                 
-                sequencedContents[originalIndex].pointee = secondObject
-                sequencedContents[newIndex].pointee = firstObject
+                contents[firstObject] = nextIndex
+                contents[secondObject] = currentIndex
                 
-                contents[o] = newIndex
+                currentIndex += adjustment
             }
-            
-            contents[object] = index
         }
     }
     
