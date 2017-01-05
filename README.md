@@ -26,11 +26,19 @@ Be sure to check out the unit tests to see all the different ways to interact wi
 
 # Installation
 
-OrderedSet is a single Swift file in the Sources directory. You can copy that file into your project, or use CocoaPods by adding the following line to your Podfile:
+OrderedSet is a single Swift file in the Sources directory. You can copy that file into your project, or use via CocoaPods by adding the following line to your Podfile:
 
 ```ruby
 pod 'OrderedSet', '2.0'
 ```
+
+or use via Carthage by adding
+
+```
+github "Weebly/OrderedSet"
+```
+
+to your Cartfile and embedding the OrderedSet.framework in your app.
 
 And then add the following import where you want to use OrderedSet:
 
