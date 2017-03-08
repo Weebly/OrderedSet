@@ -319,7 +319,7 @@ public class OrderedSet<T: Hashable> {
     }
     
     /**
-     Create a copy of the given ordered set with the same content. Important: the new array has the same references to the pervios, this is NOT a deep copy or a clone! 
+     Create a copy of the given ordered set with the same content. Important: the new array has the same references to the previous. This is NOT a deep copy or a clone! 
      */
     public func copy() -> OrderedSet<T> {
         return OrderedSet<T>(sequence: self)
