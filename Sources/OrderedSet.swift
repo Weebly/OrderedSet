@@ -317,6 +317,13 @@ public class OrderedSet<T: Hashable> {
             contents[sequencedContents[i].pointee] = i
         }
     }
+    
+    /**
+     Create a copy of the given ordered set with the same content. Important: the new array has the same references to the pervios, this is NOT a deep copy or a clone! 
+     */
+    public func copy() -> OrderedSet<T> {
+        return OrderedSet<T>(sequence: self)
+    }
 
     /// Returns the last object in the set, or `nil` if the set is empty.
     public var last: T? {
@@ -404,7 +411,7 @@ public struct OrderedSetGenerator<T: Hashable>: IteratorProtocol {
 extension OrderedSetGenerator where T: Comparable {}
 
 public func +<T: Hashable, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Iterator.Element == T {
-    let joinedSet = lhs
+    let joinedSet = lhs.copy()
     joinedSet.append(contentsOf: rhs)
     
     return joinedSet
@@ -415,7 +422,7 @@ public func +=<T: Hashable, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) wher
 }
 
 public func -<T: Hashable, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Iterator.Element == T {
-    let purgedSet = lhs
+    let purgedSet = lhs.copy()
     purgedSet.remove(rhs)
     
     return purgedSet
