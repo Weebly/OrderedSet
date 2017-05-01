@@ -690,6 +690,7 @@
 				AEBBEBB41DE9B371005525DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AEBBEBC11DE9B78F005525DE /* Build configuration list for PBXNativeTarget "OrderedSet-macOS" */ = {
 			isa = XCConfigurationList;
@@ -698,6 +699,7 @@
 				AEBBEBC31DE9B78F005525DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
