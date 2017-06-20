@@ -46,6 +46,18 @@ And then add the following import where you want to use OrderedSet:
 import OrderedSet
 ```
 
+*For Swift 4*:
+
+Using CocoaPods:
+```ruby
+pod 'OrderedSet', :git => 'https://github.com/Weebly/OrderedSet.git', :branch => 'swift-4'
+```
+
+Using Carthage:
+```
+github "Weebly/OrderedSet" "swift-4"
+```
+
 # License
 
 OrderedSet is available under the MIT license. See the LICENSE file for more info.
