@@ -9,7 +9,7 @@
 /// An ordered, unique collection of objects.
 public class OrderedSet<T: Hashable> {
     fileprivate var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
-    fileprivate var sequencedContents = Array<UnsafeMutablePointer<T>>()
+    fileprivate var sequencedContents = [UnsafeMutablePointer<T>]()
     
     /**
      Inititalizes an empty ordered set.
@@ -17,7 +17,7 @@ public class OrderedSet<T: Hashable> {
      */
     public init() { }
     
-    deinit{
+    deinit {
         removeAllObjects()
     }
     
@@ -30,26 +30,22 @@ public class OrderedSet<T: Hashable> {
      - returns:                 An initialized ordered set with the contents of sequence.
      */
     public init<S: Sequence>(sequence: S) where S.Iterator.Element == T {
-        for object in sequence {
-            if contents[object] == nil {
-                contents[object] = contents.count
-                
-                let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
-                pointer.initialize(to: object)
-                sequencedContents.append(pointer)
-            }
+        for object in sequence where contents[object] == nil {
+            contents[object] = contents.count
+            
+            let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
+            pointer.initialize(to: object)
+            sequencedContents.append(pointer)
         }
     }
-
+    
     public required init(arrayLiteral elements: T...) {
-        for object in elements {
-            if contents[object] == nil {
-                contents[object] = contents.count
-                
-                let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
-                pointer.initialize(to: object)
-                sequencedContents.append(pointer)
-            }
+        for object in elements where contents[object] == nil {
+            contents[object] = contents.count
+            
+            let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
+            pointer.initialize(to: object)
+            sequencedContents.append(pointer)
         }
     }
     
@@ -254,7 +250,7 @@ public class OrderedSet<T: Hashable> {
      - parameter     toIndex:    The index that the object should be moved to.
      */
     public func moveObject(at index: Index, to toIndex: Index) {
-        if ((index < 0 || index >= count) || (toIndex < 0 || toIndex >= count)) {
+        if (index < 0 || index >= count) || (toIndex < 0 || toIndex >= count) {
             fatalError("Attempting to move an object at or to an index that does not exist")
         }
         
@@ -299,16 +295,14 @@ public class OrderedSet<T: Hashable> {
         }
         
         var addedObjectCount = 0
-
-        for object in objects {
-            if contents[object] == nil {
-                let seqIdx = index + addedObjectCount
-                let element = UnsafeMutablePointer<T>.allocate(capacity: 1)
-                element.initialize(to: object)
-                sequencedContents.insert(element, at: seqIdx)
-                contents[object] = seqIdx
-                addedObjectCount += 1
-            }
+        
+        for object in objects where contents[object] == nil {
+            let seqIdx = index + addedObjectCount
+            let element = UnsafeMutablePointer<T>.allocate(capacity: 1)
+            element.initialize(to: object)
+            sequencedContents.insert(element, at: seqIdx)
+            contents[object] = seqIdx
+            addedObjectCount += 1
         }
         
         // Now we'll remove duplicates and update the shifted objects position in the contents
@@ -319,12 +313,13 @@ public class OrderedSet<T: Hashable> {
     }
     
     /**
-     Create a copy of the given ordered set with the same content. Important: the new array has the same references to the previous. This is NOT a deep copy or a clone! 
+     Create a copy of the given ordered set with the same content. Important: the new array has the
+     same references to the previous. This is NOT a deep copy or a clone!
      */
     public func copy() -> OrderedSet<T> {
         return OrderedSet<T>(sequence: self)
     }
-
+    
     /// Returns the last object in the set, or `nil` if the set is empty.
     public var last: T? {
         return sequencedContents.last?.pointee
@@ -349,11 +344,11 @@ extension OrderedSet {
         guard count > 0 else { return nil }
         return sequencedContents[0].pointee
     }
-
-    public func index(after i: Int) -> Int {
-        return sequencedContents.index(after: i)
+    
+    public func index(after index: Int) -> Int {
+        return sequencedContents.index(after: index)
     }
-
+    
     public typealias Index = Int
     
     public var startIndex: Int {
@@ -384,7 +379,7 @@ extension OrderedSet {
             }
         }
     }
-
+    
 }
 
 extension  OrderedSet: Sequence {
@@ -397,7 +392,7 @@ extension  OrderedSet: Sequence {
 
 public struct OrderedSetGenerator<T: Hashable>: IteratorProtocol {
     public typealias Element = T
-    private var generator: IndexingIterator<Array<UnsafeMutablePointer<T>>>
+    private var generator: IndexingIterator<[UnsafeMutablePointer<T>]>
     
     public init(set: OrderedSet<T>) {
         generator = set.sequencedContents.makeIterator()
@@ -439,10 +434,8 @@ public func ==<T> (lhs: OrderedSet<T>, rhs: OrderedSet<T>) -> Bool {
         return false
     }
     
-    for object in lhs {
-        if lhs.contents[object] != rhs.contents[object] {
-            return false
-        }
+    for object in lhs where lhs.contents[object] != rhs.contents[object] {
+        return false
     }
     
     return true
@@ -454,3 +447,5 @@ extension OrderedSet: CustomStringConvertible {
         return "OrderedSet (\(count) object(s)): [\(children)]"
     }
 }
+
+
