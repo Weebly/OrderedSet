@@ -405,25 +405,25 @@ public struct OrderedSetGenerator<T: Hashable>: IteratorProtocol {
 
 extension OrderedSetGenerator where T: Comparable {}
 
-public func +<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Iterator.Element == T {
+public func +<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Element == T {
     let joinedSet = lhs.copy()
     joinedSet.append(contentsOf: rhs)
     
     return joinedSet
 }
 
-public func +=<T, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Iterator.Element == T {
+public func +=<T, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Element == T {
     lhs.append(contentsOf: rhs)
 }
 
-public func -<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Iterator.Element == T {
+public func -<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Element == T {
     let purgedSet = lhs.copy()
     purgedSet.remove(rhs)
     
     return purgedSet
 }
 
-public func -=<T, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Iterator.Element == T {
+public func -=<T, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Element == T {
     lhs.remove(rhs)
 }
 
@@ -448,4 +448,4 @@ extension OrderedSet: CustomStringConvertible {
     }
 }
 
-}
+

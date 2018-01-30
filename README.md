@@ -29,7 +29,7 @@ Be sure to check out the unit tests to see all the different ways to interact wi
 OrderedSet is a single Swift file in the Sources directory. You can copy that file into your project, or use via CocoaPods by adding the following line to your Podfile:
 
 ```ruby
-pod 'OrderedSet', '2.0'
+pod 'OrderedSet', '3.0'
 ```
 
 or use via Carthage by adding
@@ -46,16 +46,16 @@ And then add the following import where you want to use OrderedSet:
 import OrderedSet
 ```
 
-*For Swift 4*:
+*For Swift 3*:
 
 Using CocoaPods:
 ```ruby
-pod 'OrderedSet', :git => 'https://github.com/Weebly/OrderedSet.git', :branch => 'swift-4'
+pod 'OrderedSet', :git => 'https://github.com/Weebly/OrderedSet.git', :tag => 'swift-3'
 ```
 
 Using Carthage:
 ```
-github "Weebly/OrderedSet" "swift-4"
+github "Weebly/OrderedSet" "swift-3"
 ```
 
 # License
