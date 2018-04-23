@@ -373,8 +373,8 @@ extension OrderedSet {
             if contents.count == previousCount {
                 sequencedContents[index].pointee = newValue
             } else {
-                sequencedContents[index].deinitialize()
-                sequencedContents[index].deallocate(capacity: 1)
+                sequencedContents[index].deinitialize(count: 1)
+                sequencedContents[index].deallocate()
                 sequencedContents.remove(at: index)
             }
         }
