@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1AD4D07820C0DAC4008B34B1"
-               BuildableName = "OrderedSet-tvOS.framework"
+               BlueprintIdentifier = "1AD4D0A320C0E61C008B34B1"
+               BuildableName = "OrderedSet.framework"
                BlueprintName = "OrderedSet-tvOS"
                ReferencedContainer = "container:OrderedSet.xcodeproj">
             </BuildableReference>
@@ -45,8 +45,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1AD4D07820C0DAC4008B34B1"
-            BuildableName = "OrderedSet-tvOS.framework"
+            BlueprintIdentifier = "1AD4D0A320C0E61C008B34B1"
+            BuildableName = "OrderedSet.framework"
             BlueprintName = "OrderedSet-tvOS"
             ReferencedContainer = "container:OrderedSet.xcodeproj">
          </BuildableReference>
@@ -63,8 +63,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1AD4D07820C0DAC4008B34B1"
-            BuildableName = "OrderedSet-tvOS.framework"
+            BlueprintIdentifier = "1AD4D0A320C0E61C008B34B1"
+            BuildableName = "OrderedSet.framework"
             BlueprintName = "OrderedSet-tvOS"
             ReferencedContainer = "container:OrderedSet.xcodeproj">
          </BuildableReference>
