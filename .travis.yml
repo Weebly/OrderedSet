@@ -1,5 +1,3 @@
 language: swift
 osx_image: xcode9.3
-xcode_project: Project Files/OrderedSet.xcodeproj
-xcode_scheme: OrderedSet
-xcode_sdk: iphonesimulator11.3
+script: xcodebuild -sdk iphonesimulator11.3 -destination 'platform=iOS Simulator,name=iPhone 8,OS=11.3' -project Project\ Files/OrderedSet.xcodeproj -scheme OrderedSet build test
