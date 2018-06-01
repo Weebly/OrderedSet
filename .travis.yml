@@ -1,6 +1,5 @@
-language: objective-c
-osx_image: xcode8
-xcode_projec: Project Files/OrderedSet.xcodeproj
+language: swift
+osx_image: xcode9.3
+xcode_project: Project Files/OrderedSet.xcodeproj
 xcode_scheme: OrderedSet
-xcode_sdk: iphonesimulator10.0
-
+xcode_sdk: iphonesimulator11.3
