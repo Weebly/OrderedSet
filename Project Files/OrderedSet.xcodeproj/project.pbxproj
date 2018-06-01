@@ -15,6 +15,7 @@
 		1ABC4FC91A5C966200DC4F4D /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1ABC4FC71A5C966200DC4F4D /* LaunchScreen.xib */; };
 		1ABC4FDF1A5C97F500DC4F4D /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ABC4FDE1A5C97F500DC4F4D /* OrderedSet.swift */; };
 		1AD4D0AC20C0E6A2008B34B1 /* OrderedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = AEBBEBB01DE9B371005525DE /* OrderedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1AF415F220C0E8D30030FC7F /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ABC4FDE1A5C97F500DC4F4D /* OrderedSet.swift */; };
 		AEBBEBB21DE9B371005525DE /* OrderedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = AEBBEBB01DE9B371005525DE /* OrderedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AEBBEBB61DE9B4E5005525DE /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ABC4FDE1A5C97F500DC4F4D /* OrderedSet.swift */; };
 		AEBBEBC41DE9B852005525DE /* OrderedSet.h in Headers */ = {isa = PBXBuildFile; fileRef = AEBBEBB01DE9B371005525DE /* OrderedSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -400,6 +401,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AF415F220C0E8D30030FC7F /* OrderedSet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
