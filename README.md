@@ -58,6 +58,11 @@ Using Carthage:
 github "Weebly/OrderedSet" "swift-3"
 ```
 
+Using SwiftPM:
+```swift
+package.append(.package(url: "https://github.com/Weebly/OrderedSet.git", .upToNextMajor(from: "3.0.2")))
+```
+
 # License
 
 OrderedSet is available under the MIT license. See the LICENSE file for more info.
