@@ -1,10 +1,5 @@
-//
-//  OrderedSet.swift
-//  Weebly
-//
-//  Created by James Richard on 10/22/14.
-//  Copyright (c) 2014 Weebly.
-//
+//  Copyright (c) 2014 James Richard. 
+//  Distributed under the MIT License (http://opensource.org/licenses/MIT).
 
 /// An ordered, unique collection of objects.
 public class OrderedSet<T: Hashable> {
