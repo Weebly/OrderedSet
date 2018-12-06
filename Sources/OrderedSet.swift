@@ -95,7 +95,7 @@ public class OrderedSet<T: Hashable> {
      - returns: The former index position of the object.
      */
     @discardableResult
-    public func remove(_ object: T) -> Int? {
+    public func remove(_ object: T) -> Index? {
         if let index = contents[object] {
             contents[object] = nil
             sequencedContents[index].deinitialize(count: 1)
