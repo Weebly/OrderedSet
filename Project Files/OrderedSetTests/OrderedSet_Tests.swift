@@ -175,7 +175,7 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssertEqual(subject, expected)
     }
     
-    func testRemoveObjects_returnsCollectionOfIndexPositions() {
+    func testRemoveObjects_returnsCollectionOfCorrectIndexPositions() {
         let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
         let indexes = subject.remove(["Two", "Four"])
         XCTAssertEqual(indexes, [1, 3])
