@@ -122,13 +122,15 @@ public class OrderedSet<T: Hashable> {
      */
     @discardableResult
     public func remove<S: Sequence>(_ objects: S) -> [Index]? where S.Iterator.Element == T {
-        var gen = objects.makeIterator()
+        
         var indexes = [Index]()
-        while let object: T = gen.next() {
+        objects.forEach { object in
             if let index = index(of: object) {
                 indexes.append(index)
             }
         }
+        
+        var gen = objects.makeIterator()
         while let object: T = gen.next() {
             remove(object)
         }
