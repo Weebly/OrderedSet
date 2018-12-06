@@ -184,6 +184,14 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssertEqual(subject, expected)
     }
     
+    // MARK: Index of removed Object
+    
+    func testRemoveObject_returnsCorrectIndex() {
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        let index = subject.remove("Two")
+        XCTAssertEqual(index, 1)
+    }
+    
     // MARK: Remove All Objects
     
     func testRemoveAllObjects_removesAllObjects() {

@@ -92,8 +92,10 @@ public class OrderedSet<T: Hashable> {
      If it is not the last object in the ordered set, subsequent
      objects will be shifted down one position.
      - parameter    object: The object to be removed.
+     - returns: The former index position of the object.
      */
-    public func remove(_ object: T) {
+    @discardableResult
+    public func remove(_ object: T) -> Int? {
         if let index = contents[object] {
             contents[object] = nil
             sequencedContents[index].deinitialize(count: 1)
@@ -107,7 +109,10 @@ public class OrderedSet<T: Hashable> {
                 
                 contents[object] = i - 1
             }
+            
+            return index
         }
+        return nil
     }
     
     /**
