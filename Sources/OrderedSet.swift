@@ -118,12 +118,21 @@ public class OrderedSet<T: Hashable> {
     /**
      Removes the given objects from the ordered set.
      - parameter    objects:    The objects to be removed.
+     - returns: A collection of the former index positions of the objects. An index position is not provided for objects that were not found.
      */
-    public func remove<S: Sequence>(_ objects: S) where S.Iterator.Element == T {
+    @discardableResult
+    public func remove<S: Sequence>(_ objects: S) -> [Index]? where S.Iterator.Element == T {
         var gen = objects.makeIterator()
+        var indexes = [Index]()
+        while let object: T = gen.next() {
+            if let index = index(of: object) {
+                indexes.append(index)
+            }
+        }
         while let object: T = gen.next() {
             remove(object)
         }
+        return indexes
     }
     
     /**
