@@ -418,25 +418,36 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssertEqual(subject, expected)
     }
     
-    func testInsertObjectAtIndex_whenObjectDoesntExist_insertsObjectAtCorrectSpot() {
+    func testInsertObject_whenObjectDoesntExist_insertsObjectAtCorrectSpot() {
         let subject = OrderedSet(sorted: [1, 2, 3])
         subject.insert(0)
         let expected = OrderedSet(sorted: [0, 1, 2, 3])
         XCTAssertEqual(subject, expected)
     }
     
-    func testInsertObjectAtIndex_whenObjectDoesExist_isNoop() {
+    func testInsertObject_whenObjectDoesExist_isNoop() {
         let subject = OrderedSet(sorted: [1, 2, 3])
-        subject.insert(2)
         let expected = OrderedSet(sorted: [1, 2, 3])
         XCTAssertEqual(subject, expected)
     }
     
-    func testInsertObjectAtIndex_canInsertObjectAtTail() {
+    func testInsertObjectOutcome_whenObjectDoesExist_isNoop() {
+        let subject = OrderedSet(sorted: [1, 2, 3])
+        let outcome = subject.insert(2)
+        XCTAssertFalse(outcome.didInsert)
+    }
+    
+    func testInsertObject_canInsertObjectAtTail() {
         let subject = OrderedSet(sorted: [1, 2, 3])
         subject.insert(4)
         let expected = OrderedSet(sorted: [1, 2, 3, 4])
         XCTAssertEqual(subject, expected)
+    }
+    
+    func testInsertObjectOutcome_canInsertObjectAtTail() {
+        let subject = OrderedSet(sorted: [1, 2, 3])
+        let outcome = subject.insert(4)
+        XCTAssertTrue(outcome.didInsert)
     }
     
     // MARK: Insert Objects at Index
@@ -501,9 +512,8 @@ class OrderedSet_Tests: XCTestCase {
         struct Person: Hashable {
             var firstName: String
             var lastName: String
-            func hash(into hasher: inout Hasher) {
-                hasher.combine(firstName)
-                hasher.combine(lastName)
+            var hashValue: Int {
+                return firstName.hashValue ^ lastName.hashValue
             }
         }
         let a = Person(firstName: "A", lastName: "Smith")
@@ -518,14 +528,14 @@ class OrderedSet_Tests: XCTestCase {
     
     func testInsertInEmptyArrayReturnsInsertionIndex() {
         let subject = OrderedSet<Int>()
-        let index = subject.insert(10)
-        XCTAssertEqual(index, 0)
+        let outcome = subject.insert(10)
+        XCTAssertEqual(outcome.index, 0)
     }
     
     func testInsertEqualElementReturnsCorrectInsertionIndex() {
         let subject = OrderedSet(unsorted: [3,1,0,2,1])
-        let index = subject.insert(1)
-        XCTAssert(index == 1 || index == 2 || index == 3)
+        let outcome = subject.insert(1)
+        XCTAssert(outcome.index == 1 || outcome.index == 2 || outcome.index == 3)
     }
     
     func testInsertContentsOfPreservesSortOrder() {
