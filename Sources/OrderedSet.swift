@@ -1,47 +1,71 @@
 //  Copyright (c) 2014 James Richard. 
 //  Distributed under the MIT License (http://opensource.org/licenses/MIT).
 
+import Foundation
+
+fileprivate enum Match<Index: Comparable> {
+    case found(at: Index)
+    case notFound(insertAt: Index)
+}
+
+extension Range where Bound == Int {
+    var middle: Int? {
+        guard !isEmpty else { return nil }
+        return lowerBound + count / 2
+    }
+}
+
 /// An ordered, unique collection of objects.
 public class OrderedSet<T: Hashable> {
     fileprivate var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
     fileprivate var sequencedContents = [UnsafeMutablePointer<T>]()
+    public typealias Comparator<A> = (A, A) -> Bool
     
-    /**
-     Inititalizes an empty ordered set.
-     - returns:     An empty ordered set.
-     */
-    public init() { }
+    /// The predicate that determines the sort order.
+    fileprivate let areInIncreasingOrder: Comparator<T>
     
     deinit {
         removeAllObjects()
     }
     
     /**
-     Initializes a new ordered set with the order and contents
-     of sequence.
-     If an object appears more than once in the sequence it will only appear
-     once in the ordered set, at the position of its first occurance.
-     - parameter    sequence:   The sequence to initialize the ordered set with.
-     - returns:                 An initialized ordered set with the contents of sequence.
-     */
-    public init<S: Sequence>(sequence: S) where S.Iterator.Element == T {
-        for object in sequence where contents[object] == nil {
-            contents[object] = contents.count
-            
-            let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
-            pointer.initialize(to: object)
-            sequencedContents.append(pointer)
-        }
+     Initializes empty.
+     - parameter    areInIncreasingOrder: The comparison predicate to sort its elements.
+    */
+    public init(areInIncreasingOrder: @escaping Comparator<T>) {
+        self.areInIncreasingOrder = areInIncreasingOrder
     }
     
-    public required init(arrayLiteral elements: T...) {
-        for object in elements where contents[object] == nil {
+    /// Initializes with a sequence that is already sorted according to the given comparison predicate.
+    ///
+    /// This is faster than `init(unsorted:areInIncreasingOrder:)` because the elements don't have to sorted again.
+    ///
+    /// - Precondition: `sorted` is sorted according to the given comparison predicate. If you violate this condition, the behavior is undefined.
+    public init<S: Sequence>(sorted: S, areInIncreasingOrder: @escaping Comparator<T>) where S.Iterator.Element == T {
+        for object in sorted where contents[object] == nil {
             contents[object] = contents.count
             
             let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
             pointer.initialize(to: object)
             sequencedContents.append(pointer)
         }
+        self.areInIncreasingOrder = areInIncreasingOrder
+    }
+    
+    /// Initializes with a sequence of unsorted elements and a comparison predicate.
+    public convenience init<S: Sequence>(unsorted: S, areInIncreasingOrder: @escaping Comparator<T>) where S.Iterator.Element == T {
+        let sorted = unsorted.sorted(by: areInIncreasingOrder)
+        self.init(sorted: sorted, areInIncreasingOrder: areInIncreasingOrder)
+    }
+    
+    @available(*, unavailable)
+    public required init(arrayLiteral elements: T...) {
+        fatalError()
+    }
+    
+    @available(*, unavailable)
+    public init<S: Sequence>(sequence: S) where S.Iterator.Element == T {
+        fatalError()
     }
     
     /**
@@ -62,8 +86,7 @@ public class OrderedSet<T: Hashable> {
      Appends an object to the end of the ordered set.
      - parameter    object: The object to be appended.
      */
-    public func append(_ object: T) {
-        
+    fileprivate func append(_ object: T) {
         if let lastIndex = index(of: object) {
             remove(object)
             insert(object, at: lastIndex)
@@ -79,7 +102,7 @@ public class OrderedSet<T: Hashable> {
      Appends a sequence of objects to the end of the ordered set.
      - parameter    sequence:   The sequence of objects to be appended.
      */
-    public func append<S: Sequence>(contentsOf sequence: S) where S.Iterator.Element == T {
+    fileprivate func append<S: Sequence>(contentsOf sequence: S) where S.Iterator.Element == T {
         var gen = sequence.makeIterator()
         while let object: T = gen.next() {
             append(object)
@@ -252,6 +275,61 @@ public class OrderedSet<T: Hashable> {
         moveObject(self[index], toIndex: toIndex)
     }
     
+    @discardableResult
+    public func insert(_ object: T) -> Index {
+        let index = insertionIndex(for: object)
+        insert(object, at: index)
+        return index
+    }
+    
+    /// The index where `object` should be inserted to preserve the array's sort order.
+    fileprivate func insertionIndex(for object: T) -> Index {
+        switch search(for: object) {
+        case let .found(at: index): return index
+        case let .notFound(insertAt: index): return index
+        }
+    }
+    
+    /**
+     Searches the array for `element` using binary search.
+     - returns: If `element` is in the array, returns `.found(at: index)`
+       where `index` is the index of the element in the array.
+       If `element` is not in the array, returns `.notFound(insertAt: index)`
+       where `index` is the index where the element should be inserted to
+       preserve the sort order.
+       If the array contains multiple elements that are equal to `element`,
+       there is no guarantee which of these is found.
+    
+     - complexity: O(_log(n)_), where _n_ is the size of the array.
+    */
+    fileprivate func search(for element: T) -> Match<Index> {
+        return search(for: element, in: startIndex ..< endIndex)
+    }
+    
+    fileprivate func search(for element: T, in range: Range<Index>) -> Match<Index> {
+        guard let middle = range.middle else { return .notFound(insertAt: range.upperBound) }
+        switch compare(element, self[middle]) {
+        case .orderedDescending:
+            return search(for: element, in: index(after: middle)..<range.upperBound)
+        case .orderedAscending:
+            return search(for: element, in: range.lowerBound..<middle)
+        case .orderedSame:
+            return .found(at: middle)
+        }
+    }
+    
+    fileprivate func compare(_ lhs: T, _ rhs: T) -> Foundation.ComparisonResult {
+        if areInIncreasingOrder(lhs, rhs) {
+            return .orderedAscending
+        } else if areInIncreasingOrder(rhs, lhs) {
+            return .orderedDescending
+        } else {
+            // If neither element comes before the other, they _must_ be
+            // equal, per the strict ordering requirement of `areInIncreasingOrder`.
+            return .orderedSame
+        }
+    }
+    
     /**
      Inserts an object at a given index, shifting all objects above it up one.
      This method will cause a fatal error if you attempt to insert the object out of bounds.
@@ -259,7 +337,7 @@ public class OrderedSet<T: Hashable> {
      - parameter    object:     The object to be inserted.
      - parameter    index:      The index to be inserted at.
      */
-    public func insert(_ object: T, at index: Index) {
+    fileprivate func insert(_ object: T, at index: Index) {
         if index > count || index < 0 {
             fatalError("Attempting to insert an object at an index that does not exist")
         }
@@ -276,35 +354,19 @@ public class OrderedSet<T: Hashable> {
         }
     }
     
-    /**
-     Inserts objects at a given index, shifting all objects above it up one.
-     This method will cause a fatal error if you attempt to insert the objects out of bounds.
-     If an object in objects already exists in the OrderedSet it will not be added. Objects that occur twice
-     in the sequence will only be added once.
-     - parameter    objects:    The objects to be inserted.
-     - parameter    index:      The index to be inserted at.
-     */
+    @available(*, unavailable)
     public func insert<S: Sequence>(_ objects: S, at index: Index) where S.Iterator.Element == T {
-        if index > count || index < 0 {
-            fatalError("Attempting to insert an object at an index that does not exist")
-        }
-        
-        var addedObjectCount = 0
-        
+        fatalError()
+    }
+    
+    @discardableResult
+    public func insert<S: Sequence>(_ objects: S) -> [Index] where S.Iterator.Element == T {
+        var inserted = [Index]()
         for object in objects where contents[object] == nil {
-            let seqIdx = index + addedObjectCount
-            let element = UnsafeMutablePointer<T>.allocate(capacity: 1)
-            element.initialize(to: object)
-            sequencedContents.insert(element, at: seqIdx)
-            contents[object] = seqIdx
-            addedObjectCount += 1
+            let index = insert(object)
+            inserted.append(index)
         }
-        
-        // Now we'll remove duplicates and update the shifted objects position in the contents
-        // dictionary.
-        for i in index + addedObjectCount..<count {
-            contents[sequencedContents[i].pointee] = i
-        }
+        return inserted
     }
     
     /**
@@ -312,7 +374,7 @@ public class OrderedSet<T: Hashable> {
      same references to the previous. This is NOT a deep copy or a clone!
      */
     public func copy() -> OrderedSet<T> {
-        return OrderedSet<T>(sequence: self)
+        return OrderedSet<T>(sorted: self, areInIncreasingOrder: areInIncreasingOrder)
     }
     
     /// Returns the last object in the set, or `nil` if the set is empty.
@@ -321,7 +383,27 @@ public class OrderedSet<T: Hashable> {
     }
 }
 
-extension OrderedSet: ExpressibleByArrayLiteral { }
+extension OrderedSet where T: Comparable {
+    
+    /// Initializes empty sorted. Uses `<` as the comparison predicate.
+    public convenience init() {
+        self.init(areInIncreasingOrder: <)
+    }
+    
+    /**
+     Initializes with a sequence that is already sorted according to the `<` comparison predicate. Uses `<` as the comparison predicate.
+     This is faster than `init(unsorted:)` because the elements don't have to sorted again.
+     - precondition: `sorted` is sorted according to the `<` predicate. If you violate this condition, the behavior is undefined.
+    */
+    public convenience init<S: Sequence>(sorted: S) where S.Iterator.Element == T {
+        self.init(sorted: sorted, areInIncreasingOrder: <)
+    }
+    
+    /// Initializes with a sequence of unsorted elements. Uses `<` as the comparison predicate.
+    public convenience init<S: Sequence>(unsorted: S) where S.Iterator.Element == T {
+        self.init(unsorted: unsorted, areInIncreasingOrder: <)
+    }
+}
 
 extension OrderedSet where T: Comparable {}
 
