@@ -420,36 +420,31 @@ class OrderedSet_Tests: XCTestCase {
     
     func testInsertObject_whenObjectDoesntExist_insertsObjectAtCorrectSpot() {
         let subject = OrderedSet(sorted: [1, 2, 3])
-        subject.insert(0)
+        let outcome = subject.insert(0)
+        XCTAssertEqual(outcome.index, 0)
         let expected = OrderedSet(sorted: [0, 1, 2, 3])
         XCTAssertEqual(subject, expected)
+        XCTAssertTrue(outcome.didInsert)
     }
     
     func testInsertObject_whenObjectDoesExist_isNoop() {
         let subject = OrderedSet(sorted: [1, 2, 3])
+        let outcome = subject.insert(2)
+        XCTAssertEqual(outcome.index, 1)
         let expected = OrderedSet(sorted: [1, 2, 3])
         XCTAssertEqual(subject, expected)
-    }
-    
-    func testInsertObjectOutcome_whenObjectDoesExist_isNoop() {
-        let subject = OrderedSet(sorted: [1, 2, 3])
-        let outcome = subject.insert(2)
         XCTAssertFalse(outcome.didInsert)
     }
     
     func testInsertObject_canInsertObjectAtTail() {
         let subject = OrderedSet(sorted: [1, 2, 3])
-        subject.insert(4)
+        let outcome = subject.insert(4)
+        XCTAssertEqual(outcome.index, 3)
         let expected = OrderedSet(sorted: [1, 2, 3, 4])
         XCTAssertEqual(subject, expected)
-    }
-    
-    func testInsertObjectOutcome_canInsertObjectAtTail() {
-        let subject = OrderedSet(sorted: [1, 2, 3])
-        let outcome = subject.insert(4)
         XCTAssertTrue(outcome.didInsert)
     }
-    
+        
     // MARK: Insert Objects at Index
     
     func testInsertObjectsAtIndex_whenObjectsDontExist_insertsObjectsAtCorrectSpot() {
