@@ -160,6 +160,18 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssertEqual(subject, expected)
     }
     
+    func testRemoveObjects_returnsCollectionOfCorrectIndexPositions() {
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
+        let indexes = subject.remove(["Two", "Four"])
+        XCTAssertEqual(indexes, [1, 3])
+    }
+    
+    func testRemoveObjects__whenAnObjectDoesntExist_returnsCollectionOfCorrectIndexPositions() {
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
+        let indexes = subject.remove(["Two", "Three", "Six"])
+        XCTAssertEqual(indexes, [1, 2])
+    }
+    
     // MARK: Remove Object At Index
     
     func testRemoveObjectAtIndex_removesTheObjectAtIndex() {
@@ -167,6 +179,14 @@ class OrderedSet_Tests: XCTestCase {
         subject.removeObject(at: 1)
         let expected = OrderedSet(sorted: ["One", "Three", "Four"])
         XCTAssertEqual(subject, expected)
+    }
+    
+    // MARK: Index of removed Object
+    
+    func testRemoveObject_returnsCorrectIndex() {
+        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        let index = subject.remove("Two")
+        XCTAssertEqual(index, 1)
     }
     
     // MARK: Remove All Objects
