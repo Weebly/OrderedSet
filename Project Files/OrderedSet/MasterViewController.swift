@@ -22,7 +22,7 @@ class MasterViewController: UITableViewController {
     }
 
     @objc func insertNewObject(_ sender: AnyObject) {
-        objects.insert(Date(), at: 0)
+        objects.insert(Date())
         let indexPath = IndexPath(row: 0, section: 0)
         self.tableView.insertRows(at: [indexPath], with: .automatic)
     }
