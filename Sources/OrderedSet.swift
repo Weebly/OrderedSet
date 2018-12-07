@@ -275,11 +275,17 @@ public class OrderedSet<T: Hashable> {
         moveObject(self[index], toIndex: toIndex)
     }
     
+    public typealias InsertOutcome = (index: Index, didInsert: Bool)
+    
     @discardableResult
-    public func insert(_ object: T) -> Index {
-        let index = insertionIndex(for: object)
-        insert(object, at: index)
-        return index
+    public func insert(_ object: T) -> InsertOutcome {
+        switch search(for: object) {
+        case let .found(at: index):
+            return (index, false)
+        case let .notFound(insertAt: index):
+            insert(object, at: index)
+            return (index, true)
+        }
     }
     
     /// The index where `object` should be inserted to preserve the array's sort order.
@@ -363,8 +369,8 @@ public class OrderedSet<T: Hashable> {
     public func insert<S: Sequence>(_ objects: S) -> [Index] where S.Iterator.Element == T {
         var inserted = [Index]()
         for object in objects where contents[object] == nil {
-            let index = insert(object)
-            inserted.append(index)
+            let outcome = insert(object)
+            inserted.append(outcome.index)
         }
         return inserted
     }
