@@ -458,3 +458,5 @@ extension OrderedSet: CustomStringConvertible {
         return "OrderedSet (\(count) object(s)): [\(children)]"
     }
 }
+
+extension OrderedSet: RandomAccessCollection {}
