@@ -393,29 +393,6 @@ extension OrderedSet {
     
 }
 
-extension  OrderedSet: Sequence {
-    public typealias Iterator = OrderedSetGenerator<T>
-    
-    public func makeIterator() -> Iterator {
-        return OrderedSetGenerator(set: self)
-    }
-}
-
-public struct OrderedSetGenerator<T: Hashable>: IteratorProtocol {
-    public typealias Element = T
-    private var generator: IndexingIterator<[UnsafeMutablePointer<T>]>
-    
-    public init(set: OrderedSet<T>) {
-        generator = set.sequencedContents.makeIterator()
-    }
-    
-    public mutating func next() -> Element? {
-        return generator.next()?.pointee
-    }
-}
-
-extension OrderedSetGenerator where T: Comparable {}
-
 public func +<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Element == T {
     let joinedSet = lhs.copy()
     joinedSet.append(contentsOf: rhs)
@@ -458,3 +435,5 @@ extension OrderedSet: CustomStringConvertible {
         return "OrderedSet (\(count) object(s)): [\(children)]"
     }
 }
+
+extension OrderedSet: RandomAccessCollection {}
