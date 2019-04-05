@@ -20,7 +20,6 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = "10.10"
   s.tvos.deployment_target = "9.0"
 
-  s.swift_version = '5.0'
   s.source       = { :git => "https://github.com/Weebly/OrderedSet.git", :tag => "v4.0.0" }
 
   s.requires_arc = true
