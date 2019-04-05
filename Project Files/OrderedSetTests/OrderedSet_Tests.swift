@@ -35,13 +35,13 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Append
     
     func testAppend_increasesCount() {
-        let subject = OrderedSet<String>()
+        var subject = OrderedSet<String>()
         subject.append("Test")
         XCTAssertEqual(subject.count, 1)
     }
 
     func testAppend_withSameObjectTwice_keepsCountAs1() {
-        let subject = OrderedSet<String>()
+        var subject = OrderedSet<String>()
         subject.append("Test")
         subject.append("Test")
         XCTAssertEqual(subject.count, 1)
@@ -50,13 +50,13 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Subscript
     
     func testObjectSubscript_returnsCorrectObject() {
-        let subject = OrderedSet<String>()
+        var subject = OrderedSet<String>()
         subject.append("Test")
         XCTAssert(subject[0] == "Test")
     }
     
     func testSubscriptInsertion_replacesObject() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         subject[1] = "wat"
         XCTAssertEqual(subject.count, 3)
         XCTAssert(subject[0] == "One")
@@ -65,7 +65,7 @@ class OrderedSet_Tests: XCTestCase {
     }
     
     func testSubscriptSetting_iteratesCorrectly() {
-        let subject: OrderedSet<Int> = [0, 1, 2]
+        var subject: OrderedSet<Int> = [0, 1, 2]
         subject[1] = 0
         var contents = [Int]()
         for i in subject {
@@ -80,7 +80,7 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Contains
 
     func testContains_whenObjectIsContained_isTrue() {
-        let subject = OrderedSet<String>()
+        var subject = OrderedSet<String>()
         subject.append("Test")
         XCTAssertTrue(subject.contains("Test"))
     }
@@ -147,19 +147,19 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Remove
     
     func testRemove_whenObjectExists_reducesCount() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         subject.remove("Two")
         XCTAssertEqual(subject.count, 2)
     }
     
     func testRemove_whenObjectDoesntExist_doesntChangeCount() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         subject.remove("Twoz")
         XCTAssertEqual(subject.count, 3)
     }
     
     func testRemove_whenObjectIsNotLast_updatesOrdering() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
         subject.remove("Two")
         XCTAssert(subject[0] == "One")
         XCTAssert(subject[1] == "Three")
@@ -169,20 +169,20 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Remove Objects
     
     func testRemoveObjects_removesPassedInObjects() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
         subject.remove(["Two", "Four"])
         let expected: OrderedSet<String> = ["One", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testRemoveObjects_returnsCollectionOfCorrectIndexPositions() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
         let indexes = subject.remove(["Two", "Four"])
         XCTAssertEqual(indexes, [1, 3])
     }
     
     func testRemoveObjects__whenAnObjectDoesntExist_returnsCollectionOfCorrectIndexPositions() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
         let indexes = subject.remove(["Two", "Three", "Six"])
         XCTAssertEqual(indexes, [1, 2])
     }
@@ -190,7 +190,7 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Remove Object At Index
     
     func testRemoveObjectAtIndex_removesTheObjectAtIndex() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
         subject.removeObject(at: 1)
         let expected: OrderedSet<String> = ["One", "Three", "Four"]
         XCTAssertEqual(subject, expected)
@@ -199,7 +199,7 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Index of removed Object
     
     func testRemoveObject_returnsCorrectIndex() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         let index = subject.remove("Two")
         XCTAssertEqual(index, 1)
     }
@@ -207,7 +207,7 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Remove All Objects
     
     func testRemoveAllObjects_removesAllObjects() {
-        let subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         subject.removeAllObjects()
         XCTAssertEqual(subject.count, 0)
     }
@@ -347,14 +347,14 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: - Swap Object
     
     func testSwapObject_whenBothObjectsExist_swapsBothObjects() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.swapObject("One", with: "Three")
         let expected: OrderedSet<String> = ["Three", "Two", "One"]
         XCTAssertEqual(subject, expected)
     }
     
     func testSwapObject_whenOneObjectsExist_doesntChangeSet() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.swapObject("One", with: "Four")
         let expected: OrderedSet<String> = ["One", "Two", "Three"]
         XCTAssertEqual(subject, expected)
@@ -363,55 +363,55 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Move Object to Index
     
     func testMoveObjectToIndex_whenObjectExists_whenMovingAmongEntireSet_movesObjectUp_andShiftsOthersDown() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.moveObject("One", toIndex: 2)
         let expected: OrderedSet<String> = ["Two", "Three", "One"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectToIndex_whenObjectExists_whenMovingAmongEntireSet_movesObjectDown_andShiftsOthersUp() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.moveObject("Three", toIndex: 0)
         let expected: OrderedSet<String> = ["Three", "One", "Two"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectToIndex_whenObjectExists_whenMovingAmongSubsetOfSet_movesObjectUp_andShiftsTraversedObjectsDown() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
         subject.moveObject("Four", toIndex: 1)
         let expected: OrderedSet<String> = ["One", "Four", "Two", "Three", "Five"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectToIndex_whenObjectExists_whenMovingAmongSubsetOfSet_movesObjectDown_andShiftsTraversedObjectsUp() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
         subject.moveObject("Two", toIndex: 3)
         let expected: OrderedSet<String> = ["One", "Three", "Four", "Two", "Five"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectToIndex_whenObjectDoesntExist_isNoop() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.moveObject("Four", toIndex: 0)
         let expected: OrderedSet<String> = ["One", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectToIndex_whenObjectIsSameIndex_isNoop() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.moveObject("One", toIndex: 0)
         let expected: OrderedSet<String> = ["One", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObject_withFullMove_mapsCorrectly() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
         subject.moveObject("One", toIndex: 4)
         XCTAssertEqual(subject.map { $0 }, ["Two", "Three", "Four", "Five", "One"])
     }
     
     func testMoveObject_withInnerMove_mapsCorrectly() {
-        let subject: OrderedSet<String> = ["p0", "p1", "c1", "p2", "p3", "c2"]
+        var subject: OrderedSet<String> = ["p0", "p1", "c1", "p2", "p3", "c2"]
         subject.moveObject("p2", toIndex: 1)
         XCTAssertEqual(subject.map { $0 }, ["p0", "p2", "p1", "c1", "p3", "c2"])
     }
@@ -419,56 +419,56 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Insert Object at Index
     
     func testMoveObjectAtIndex_whenObjectExists_whenMovingAmongEntireSet_movesObjectUp_andShiftsOthersDown() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.moveObject(at: 0, to: 2)
         let expected: OrderedSet<String> = ["Two", "Three", "One"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectAtIndex_whenObjectExists_whenMovingAmongEntireSet_movesObjectDown_andShiftsOthersUp() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.moveObject(at: 2, to: 0)
         let expected: OrderedSet<String> = ["Three", "One", "Two"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectAtIndex_whenObjectExists_whenMovingAmongSubsetOfSet_movesObjectUp_andShiftsTraversedObjectsDown() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
         subject.moveObject(at: 3, to: 1)
         let expected: OrderedSet<String> = ["One", "Four", "Two", "Three", "Five"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectAtIndex_whenObjectExists_whenMovingAmongSubsetOfSet_movesObjectDown_andShiftsTraversedObjectsUp() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
         subject.moveObject(at: 1, to: 3)
         let expected: OrderedSet<String> = ["One", "Three", "Four", "Two", "Five"]
         XCTAssertEqual(subject, expected)
     }
     
     func testMoveObjectAtIndex_whenSameIndexes_isNoop() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.moveObject(at: 0, to: 0)
         let expected: OrderedSet<String> = ["One", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testInsertObjectAtIndex_whenObjectDoesntExist_insertsObjectAtCorrectSpot() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.insert("Zero", at: 0)
         let expected: OrderedSet<String> = ["Zero", "One", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testInsertObjectAtIndex_whenObjectDoesExist_isNoop() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.insert("Two", at: 0)
         let expected: OrderedSet<String> = ["One", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testInsertObjectAtIndex_canInsertObjectAtTail() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.insert("Four", at: 3)
         let expected: OrderedSet<String> = ["One", "Two", "Three", "Four"]
         XCTAssertEqual(subject, expected)
@@ -477,28 +477,28 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Insert Objects at Index
     
     func testInsertObjectsAtIndex_whenObjectsDontExist_insertsObjectsAtCorrectSpot() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.insert(["Foo", "Bar"], at: 1)
         let expected: OrderedSet<String> = ["One", "Foo", "Bar", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testInsertObjectsAtIndex_whenSomeObjectsExist_insertsOnlyNonExistingObjectsAtCorrectSpot() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.insert(["Foo", "Three"], at: 1)
         let expected: OrderedSet<String> = ["One", "Foo", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testInsertObjectsAtIndex_whenRepeatedObjectsAreInserted_insertsOnlyOne() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.insert(["Foo", "Foo"], at: 1)
         let expected: OrderedSet<String> = ["One", "Foo", "Two", "Three"]
         XCTAssertEqual(subject, expected)
     }
     
     func testInsertObjectsAtIndex_canInsertObjectAtTail() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.insert(["Four", "Five"], at: 3)
         let expected: OrderedSet<String> = ["One", "Two", "Three", "Four", "Five"]
         XCTAssertEqual(subject, expected)
@@ -507,21 +507,21 @@ class OrderedSet_Tests: XCTestCase {
     // MARK: Append Objects
     
     func testAppendObjects_whenObjectsDontExist_appendsAllObjects() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.append(contentsOf: ["Foo", "Bar"])
         let expected: OrderedSet<String> = ["One", "Two", "Three", "Foo", "Bar"]
         XCTAssertEqual(subject, expected)
     }
     
     func testAppendObjects_whenSomeObjectsExist_appendsOnlyNonExistingObjects() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.append(contentsOf: ["Foo", "Two"])
         let expected: OrderedSet<String> = ["One", "Two", "Three", "Foo"]
         XCTAssertEqual(subject, expected)
     }
     
     func testAppendObjects_whenRepeatedObjectsAreAppended_appendsOnlyOne() {
-        let subject: OrderedSet<String> = ["One", "Two", "Three"]
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
         subject.append(contentsOf: ["Foo", "Foo"])
         let expected: OrderedSet<String> = ["One", "Two", "Three", "Foo"]
         XCTAssertEqual(subject, expected)

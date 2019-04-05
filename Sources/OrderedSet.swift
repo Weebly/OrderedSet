@@ -2,7 +2,7 @@
 //  Distributed under the MIT License (http://opensource.org/licenses/MIT).
 
 /// An ordered, unique collection of objects.
-public class OrderedSet<T: Hashable> {
+public struct OrderedSet<T: Hashable> {
     fileprivate var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
     fileprivate var sequencedContents = [UnsafeMutablePointer<T>]()
     
@@ -11,10 +11,6 @@ public class OrderedSet<T: Hashable> {
      - returns:     An empty ordered set.
      */
     public init() { }
-    
-    deinit {
-        removeAllObjects()
-    }
     
     /**
      Initializes a new ordered set with the order and contents
@@ -34,7 +30,7 @@ public class OrderedSet<T: Hashable> {
         }
     }
     
-    public required init(arrayLiteral elements: T...) {
+    public init(arrayLiteral elements: T...) {
         for object in elements where contents[object] == nil {
             contents[object] = contents.count
             
@@ -62,7 +58,7 @@ public class OrderedSet<T: Hashable> {
      Appends an object to the end of the ordered set.
      - parameter    object: The object to be appended.
      */
-    public func append(_ object: T) {
+    public mutating func append(_ object: T) {
         
         if let lastIndex = index(of: object) {
             remove(object)
@@ -79,7 +75,7 @@ public class OrderedSet<T: Hashable> {
      Appends a sequence of objects to the end of the ordered set.
      - parameter    sequence:   The sequence of objects to be appended.
      */
-    public func append<S: Sequence>(contentsOf sequence: S) where S.Iterator.Element == T {
+    public mutating func append<S: Sequence>(contentsOf sequence: S) where S.Iterator.Element == T {
         var gen = sequence.makeIterator()
         while let object: T = gen.next() {
             append(object)
@@ -95,7 +91,7 @@ public class OrderedSet<T: Hashable> {
      - returns: The former index position of the object.
      */
     @discardableResult
-    public func remove(_ object: T) -> Index? {
+    public mutating func remove(_ object: T) -> Index? {
         if let index = contents[object] {
             contents[object] = nil
             sequencedContents[index].deinitialize(count: 1)
@@ -121,7 +117,7 @@ public class OrderedSet<T: Hashable> {
      - returns: A collection of the former index positions of the objects. An index position is not provided for objects that were not found.
      */
     @discardableResult
-    public func remove<S: Sequence>(_ objects: S) -> [Index]? where S.Iterator.Element == T {
+    public mutating func remove<S: Sequence>(_ objects: S) -> [Index]? where S.Iterator.Element == T {
         
         var indexes = [Index]()
         objects.forEach { object in
@@ -142,7 +138,7 @@ public class OrderedSet<T: Hashable> {
      This method will cause a fatal error if you attempt to move an object to an index that is out of bounds.
      - parameter    index:  The index of the object to be removed.
      */
-    public func removeObject(at index: Index) {
+    public mutating func removeObject(at index: Index) {
         if index < 0 || index >= count {
             fatalError("Attempting to remove an object at an index that does not exist")
         }
@@ -153,7 +149,7 @@ public class OrderedSet<T: Hashable> {
     /**
      Removes all objects in the ordered set.
      */
-    public func removeAllObjects() {
+    public mutating func removeAllObjects() {
         contents.removeAll()
         
         for sequencedContent in sequencedContents {
@@ -170,7 +166,7 @@ public class OrderedSet<T: Hashable> {
      - parameter    first:  The first object to be swapped.
      - parameter    second: The second object to be swapped.
      */
-    public func swapObject(_ first: T, with second: T) {
+    public mutating func swapObject(_ first: T, with second: T) {
         if let firstPosition = contents[first] {
             if let secondPosition = contents[second] {
                 contents[first] = secondPosition
@@ -221,7 +217,7 @@ public class OrderedSet<T: Hashable> {
      - parameter    object: The object to be moved
      - parameter    index:  The index that the object should be moved to.
      */
-    public func moveObject(_ object: T, toIndex index: Index) {
+    public mutating func moveObject(_ object: T, toIndex index: Index) {
         if index < 0 || index >= count {
             fatalError("Attempting to move an object at an index that does not exist")
         }
@@ -260,7 +256,7 @@ public class OrderedSet<T: Hashable> {
      - parameter     index:      The index of the object to be moved.
      - parameter     toIndex:    The index that the object should be moved to.
      */
-    public func moveObject(at index: Index, to toIndex: Index) {
+    public mutating func moveObject(at index: Index, to toIndex: Index) {
         if (index < 0 || index >= count) || (toIndex < 0 || toIndex >= count) {
             fatalError("Attempting to move an object at or to an index that does not exist")
         }
@@ -275,7 +271,7 @@ public class OrderedSet<T: Hashable> {
      - parameter    object:     The object to be inserted.
      - parameter    index:      The index to be inserted at.
      */
-    public func insert(_ object: T, at index: Index) {
+    public mutating func insert(_ object: T, at index: Index) {
         if index > count || index < 0 {
             fatalError("Attempting to insert an object at an index that does not exist")
         }
@@ -300,7 +296,7 @@ public class OrderedSet<T: Hashable> {
      - parameter    objects:    The objects to be inserted.
      - parameter    index:      The index to be inserted at.
      */
-    public func insert<S: Sequence>(_ objects: S, at index: Index) where S.Iterator.Element == T {
+    public mutating func insert<S: Sequence>(_ objects: S, at index: Index) where S.Iterator.Element == T {
         if index > count || index < 0 {
             fatalError("Attempting to insert an object at an index that does not exist")
         }
@@ -394,7 +390,7 @@ extension OrderedSet {
 }
 
 public func +<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Element == T {
-    let joinedSet = lhs.copy()
+    var joinedSet = lhs.copy()
     joinedSet.append(contentsOf: rhs)
     
     return joinedSet
@@ -405,7 +401,7 @@ public func +=<T, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Elemen
 }
 
 public func -<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Element == T {
-    let purgedSet = lhs.copy()
+    var purgedSet = lhs.copy()
     purgedSet.remove(rhs)
     
     return purgedSet
