@@ -76,6 +76,13 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssertEqual(contents[0], 0)
         XCTAssertEqual(contents[1], 2)
     }
+
+    func testSubscriptAssignObjectAtIndex_doesNotAffectOtherSet() {
+        let other: OrderedSet<String> = ["One"]
+        var subject = other
+        subject[0] = "Two"
+        XCTAssertNotEqual(subject, other)
+    }
     
     // MARK: Contains
 
