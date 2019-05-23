@@ -40,7 +40,14 @@ public struct OrderedSet<T: Hashable> {
         }
 
         func copy() -> SequencedContents {
-            return self
+            let copy = SequencedContents()
+            copy.pointers.reserveCapacity(pointers.count)
+            for p in pointers {
+                let newP = UnsafeMutablePointer<T>.allocate(capacity: 1)
+                newP.initialize(from: p, count: 1)
+                copy.pointers.append(newP)
+            }
+            return copy
         }
     }
     
@@ -384,7 +391,7 @@ public struct OrderedSet<T: Hashable> {
      same references to the previous. This is NOT a deep copy or a clone!
      */
     public func copy() -> OrderedSet<T> {
-        return OrderedSet<T>(sequence: self)
+        return self
     }
     
     /// Returns the last object in the set, or `nil` if the set is empty.
