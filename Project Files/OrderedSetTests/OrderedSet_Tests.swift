@@ -76,6 +76,13 @@ class OrderedSet_Tests: XCTestCase {
         XCTAssertEqual(contents[0], 0)
         XCTAssertEqual(contents[1], 2)
     }
+
+    func testSubscriptAssignObjectAtIndex_doesNotAffectOtherSet() {
+        let other: OrderedSet<String> = ["One"]
+        var subject = other
+        subject[0] = "Two"
+        XCTAssertNotEqual(subject, other)
+    }
     
     // MARK: Contains
 
@@ -185,6 +192,13 @@ class OrderedSet_Tests: XCTestCase {
         var subject = OrderedSet<String>(sequence: ["One", "Two", "Three", "Four"])
         let indexes = subject.remove(["Two", "Three", "Six"])
         XCTAssertEqual(indexes, [1, 2])
+    }
+
+    func testRemoveObjects__whenRemovingSameObjectFromTwoSets_doesNotCrash() {
+        var original = OrderedSet<String>(sequence: ["One"])
+        var subject = original
+        original.remove("One")
+        subject.remove("One")
     }
     
     // MARK: Remove Object At Index

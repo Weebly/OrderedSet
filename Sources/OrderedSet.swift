@@ -4,7 +4,52 @@
 /// An ordered, unique collection of objects.
 public struct OrderedSet<T: Hashable> {
     fileprivate var contents = [T: Index]() // Needs to have a value of Index instead of Void for fast removals
-    fileprivate var sequencedContents = [UnsafeMutablePointer<T>]()
+    fileprivate var sequencedContents = SequencedContents()
+
+    fileprivate class SequencedContents {
+        fileprivate var pointers = [UnsafeMutablePointer<T>]()
+
+        func append(_ element: UnsafeMutablePointer<T>) {
+            pointers.append(element)
+        }
+
+        func index(after i: Int) -> Int {
+            return pointers.index(after: i)
+        }
+
+        func insert(_ element: UnsafeMutablePointer<T>, at i: Int) {
+            pointers.insert(element, at: i)
+        }
+
+        var last: UnsafeMutablePointer<T>? {
+            return pointers.last
+        }
+
+        @discardableResult
+        func remove(at i: Int) -> UnsafeMutablePointer<T> {
+            return pointers.remove(at: i)
+        }
+
+        func removeAll() {
+            pointers.removeAll()
+        }
+
+        subscript(_ i: Int) -> UnsafeMutablePointer<T> {
+            get { return pointers[i] }
+            set { pointers[i] = newValue }
+        }
+
+        func copy() -> SequencedContents {
+            let copy = SequencedContents()
+            copy.pointers.reserveCapacity(pointers.count)
+            for p in pointers {
+                let newP = UnsafeMutablePointer<T>.allocate(capacity: 1)
+                newP.initialize(from: p, count: 1)
+                copy.pointers.append(newP)
+            }
+            return copy
+        }
+    }
     
     /**
      Inititalizes an empty ordered set.
@@ -65,6 +110,10 @@ public struct OrderedSet<T: Hashable> {
             insert(object, at: lastIndex)
         } else {
             contents[object] = contents.count
+
+            if !isKnownUniquelyReferenced(&sequencedContents) {
+                sequencedContents = sequencedContents.copy()
+            }
             let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
             pointer.initialize(to: object)
             sequencedContents.append(pointer)
@@ -94,6 +143,10 @@ public struct OrderedSet<T: Hashable> {
     public mutating func remove(_ object: T) -> Index? {
         if let index = contents[object] {
             contents[object] = nil
+
+            if !isKnownUniquelyReferenced(&sequencedContents) {
+                sequencedContents = sequencedContents.copy()
+            }
             sequencedContents[index].deinitialize(count: 1)
             sequencedContents[index].deallocate()
             sequencedContents.remove(at: index)
@@ -152,7 +205,10 @@ public struct OrderedSet<T: Hashable> {
     public mutating func removeAllObjects() {
         contents.removeAll()
         
-        for sequencedContent in sequencedContents {
+        if !isKnownUniquelyReferenced(&sequencedContents) {
+            sequencedContents = sequencedContents.copy()
+        }
+        for sequencedContent in sequencedContents.pointers {
             sequencedContent.deinitialize(count: 1)
             sequencedContent.deallocate()
         }
@@ -172,6 +228,9 @@ public struct OrderedSet<T: Hashable> {
                 contents[first] = secondPosition
                 contents[second] = firstPosition
                 
+                if !isKnownUniquelyReferenced(&sequencedContents) {
+                    sequencedContents = sequencedContents.copy()
+                }
                 sequencedContents[firstPosition].pointee = second
                 sequencedContents[secondPosition].pointee = first
             }
@@ -229,6 +288,10 @@ public struct OrderedSet<T: Hashable> {
             }
             
             let adjustment = position > index ? -1 : 1
+
+            if !isKnownUniquelyReferenced(&sequencedContents) {
+                sequencedContents = sequencedContents.copy()
+            }
             
             var currentIndex = position
             while currentIndex != index {
@@ -302,6 +365,10 @@ public struct OrderedSet<T: Hashable> {
         }
         
         var addedObjectCount = 0
+
+        if !isKnownUniquelyReferenced(&sequencedContents) {
+            sequencedContents = sequencedContents.copy()
+        }
         
         for object in objects where contents[object] == nil {
             let seqIdx = index + addedObjectCount
@@ -324,7 +391,7 @@ public struct OrderedSet<T: Hashable> {
      same references to the previous. This is NOT a deep copy or a clone!
      */
     public func copy() -> OrderedSet<T> {
-        return OrderedSet<T>(sequence: self)
+        return self
     }
     
     /// Returns the last object in the set, or `nil` if the set is empty.
@@ -372,6 +439,10 @@ extension OrderedSet {
         }
         
         set {
+            if !isKnownUniquelyReferenced(&sequencedContents) {
+                sequencedContents = sequencedContents.copy()
+            }
+
             let previousCount = contents.count
             contents[sequencedContents[index].pointee] = nil
             contents[newValue] = index
