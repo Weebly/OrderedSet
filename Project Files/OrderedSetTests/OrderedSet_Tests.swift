@@ -547,5 +547,37 @@ class OrderedSet_Tests: XCTestCase {
         let subject: OrderedSet<String> = ["One", "Two", "Three"]
         XCTAssertEqual(subject.description, "OrderedSet (3 object(s)): [One, Two, Three]")
     }
+
+    // MARK: Operator Overloads
+
+    func testAddOperator_appendsSequence() {
+        let initial: OrderedSet<String> = ["One", "Two"]
+        let subject = initial + ["Three"]
+
+        XCTAssertEqual(initial, ["One", "Two"])
+        XCTAssertEqual(subject, ["One", "Two", "Three"])
+    }
+
+    func testAddInPlaceOperator_appendsSequence() {
+        var subject: OrderedSet<String> = ["One", "Two"]
+        subject += ["Three"]
+
+        XCTAssertEqual(subject, ["One", "Two", "Three"])
+    }
+
+    func testSubtractOperator_removesSequence() {
+        let initial: OrderedSet<String> = ["One", "Two", "Three"]
+        let subject = initial - ["Three"]
+
+        XCTAssertEqual(initial, ["One", "Two", "Three"])
+        XCTAssertEqual(subject, ["One", "Two"])
+    }
+
+    func testSubtractInPlaceOperator_removesSequence() {
+        var subject: OrderedSet<String> = ["One", "Two", "Three"]
+        subject -= ["Three"]
+
+        XCTAssertEqual(subject, ["One", "Two"])
+    }
     
 }
