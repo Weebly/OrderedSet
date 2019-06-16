@@ -29,7 +29,7 @@ Be sure to check out the unit tests to see all the different ways to interact wi
 OrderedSet is a single Swift file in the Sources directory. You can copy that file into your project, or use via CocoaPods by adding the following line to your Podfile:
 
 ```ruby
-pod 'OrderedSet', '4.0'
+pod 'OrderedSet', '5.0'
 ```
 
 or use via Carthage by adding
@@ -49,7 +49,7 @@ import OrderedSet
 
 Using SwiftPM:
 ```swift
-package.append(.package(url: "https://github.com/Weebly/OrderedSet.git", .upToNextMajor(from: "4.0.0")))
+package.append(.package(url: "https://github.com/Weebly/OrderedSet.git", .upToNextMajor(from: "5.0.0")))
 ```
 
 # License
