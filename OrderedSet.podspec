@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "OrderedSet"
-  s.version      = "4.0.0"
+  s.version      = "5.0.0"
   s.summary      = "A Swift implementation of an OrderedSet."
 
   s.description  = <<-DESC
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "9.0"
 
   s.swift_version = '5.0'
-  s.source       = { :git => "https://github.com/Weebly/OrderedSet.git", :tag => "v4.0.0" }
+  s.source       = { :git => "https://github.com/Weebly/OrderedSet.git", :tag => "v5.0.0" }
 
   s.requires_arc = true
 
