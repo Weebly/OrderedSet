@@ -386,14 +386,6 @@ public struct OrderedSet<T: Hashable> {
         }
     }
     
-    /**
-     Create a copy of the given ordered set with the same content. Important: the new array has the
-     same references to the previous. This is NOT a deep copy or a clone!
-     */
-    public func copy() -> OrderedSet<T> {
-        return self
-    }
-    
     /// Returns the last object in the set, or `nil` if the set is empty.
     public var last: T? {
         return sequencedContents.last?.pointee
@@ -461,7 +453,7 @@ extension OrderedSet {
 }
 
 public func +<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Element == T {
-    var joinedSet = lhs.copy()
+    var joinedSet = lhs
     joinedSet.append(contentsOf: rhs)
     
     return joinedSet
@@ -472,7 +464,7 @@ public func +=<T, S: Sequence> (lhs: inout OrderedSet<T>, rhs: S) where S.Elemen
 }
 
 public func -<T, S: Sequence> (lhs: OrderedSet<T>, rhs: S) -> OrderedSet<T> where S.Element == T {
-    var purgedSet = lhs.copy()
+    var purgedSet = lhs
     purgedSet.remove(rhs)
     
     return purgedSet
