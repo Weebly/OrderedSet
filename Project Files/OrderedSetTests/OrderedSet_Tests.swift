@@ -220,6 +220,12 @@ class OrderedSet_Tests: XCTestCase {
     
     // MARK: Remove All Objects
     
+    func testRemoveAllObjects_removesAllObjectsThatSatisfyGivenPredicate() {
+        var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
+        let indexes = subject.removeAllObjects(where: { $0.hasPrefix("T") })
+        XCTAssertEqual(indexes, [1, 2])
+    }
+    
     func testRemoveAllObjects_removesAllObjects() {
         var subject = OrderedSet<String>(sequence: ["One", "Two", "Three"])
         subject.removeAllObjects()
