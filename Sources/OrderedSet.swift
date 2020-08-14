@@ -202,22 +202,20 @@ public struct OrderedSet<T: Hashable> {
     /**
      Removes all objects that satisfy the given predicate in the ordered set.
      - parameter    shouldBeRemoved: A closure that takes an object in the ordered set as its argument and returns a Boolean value indicating whether the object should be removed from the ordered set.
-     - returns: A collection of the former index positions of the objects. An index position is not provided for objects that were not found.
+     - returns: The objects to be removed in ordered set.
     */
     @discardableResult
-    public mutating func removeAllObjects(where shuldBeRemoved: (T) -> Bool) -> [Index] {
+    public mutating func removeAllObjects(where shouldBeRemoved: (T) -> Bool) -> [T] {
         
-        let shouldBeRemovedContents = contents.filter { value, _ in
-            shuldBeRemoved(value)
+        var removedObjects = [T]()
+        var pointers = sequencedContents.pointers.makeIterator()
+        while let object = pointers.next()?.pointee {
+            if shouldBeRemoved(object) {
+                remove(object)
+                removedObjects.append(object)
+            }
         }
-        
-        var indexes = [Index]()
-        var gen = shouldBeRemovedContents.makeIterator()
-        while let (value, index): (T, Index) = gen.next() {
-            remove(value)
-            indexes.append(index)
-        }
-        return indexes
+        return removedObjects
     }
     
     /**
