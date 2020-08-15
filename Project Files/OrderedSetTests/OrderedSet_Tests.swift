@@ -225,7 +225,8 @@ class OrderedSet_Tests: XCTestCase {
         let removedObjects = subject.removeAllObjects(where: { $0.hasPrefix("T") })
         let expected: OrderedSet<String> = ["One"]
         XCTAssertEqual(subject, expected)
-        XCTAssertEqual(removedObjects, ["Two", "Three"])
+        let expectedRemovedObjects: OrderedSet<String> = ["Two", "Three"]
+        XCTAssertEqual(removedObjects, expectedRemovedObjects)
     }
     
     func testRemoveAllObjects_removesAllObjects() {
