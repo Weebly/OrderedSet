@@ -200,6 +200,25 @@ public struct OrderedSet<T: Hashable> {
     }
     
     /**
+     Removes all objects that satisfy the given predicate in the ordered set.
+     - parameter    shouldBeRemoved: A closure that takes an object in the ordered set as its argument and returns a Boolean value indicating whether the object should be removed from the ordered set.
+     - returns: The objects that were removed from the ordered set.
+    */
+    @discardableResult
+    public mutating func removeAllObjects(where shouldBeRemoved: (T) -> Bool) -> OrderedSet<T> {
+        
+        var removedObjects = OrderedSet<T>()
+        var pointers = sequencedContents.pointers.makeIterator()
+        while let object = pointers.next()?.pointee {
+            if shouldBeRemoved(object) {
+                remove(object)
+                removedObjects.append(object)
+            }
+        }
+        return removedObjects
+    }
+    
+    /**
      Removes all objects in the ordered set.
      */
     public mutating func removeAllObjects() {
