@@ -22,8 +22,7 @@ Pod::Spec.new do |s|
 
   s.swift_version = '5.0'
   s.source       = { :git => "https://github.com/Weebly/OrderedSet.git", :tag => "v5.0.0" }
-
+  s.resource_bundles = {'OrderedSet_privacy' => ['Framework/PrivacyInfo.xcprivacy']}
   s.requires_arc = true
-
   s.source_files  = "Sources/*.{swift}"
 end
