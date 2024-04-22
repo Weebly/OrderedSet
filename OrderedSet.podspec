@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "OrderedSet"
-  s.version      = "5.0.0"
+  s.version      = "6.0.2"
   s.summary      = "A Swift implementation of an OrderedSet."
 
   s.description  = <<-DESC
@@ -16,12 +16,12 @@ Pod::Spec.new do |s|
   s.author             = { "James Richard" => "jrichard@squareup.com" }
   s.social_media_url   = "http://twitter.com/ketzusaka"
 
-  s.ios.deployment_target = "8.0"
+  s.ios.deployment_target = "12.0"
   s.osx.deployment_target = "10.10"
   s.tvos.deployment_target = "9.0"
 
   s.swift_version = '5.0'
-  s.source       = { :git => "https://github.com/Weebly/OrderedSet.git", :tag => "v5.0.0" }
+  s.source       = { :git => "https://github.com/Weebly/OrderedSet.git", :tag => "v6.0.2" }
   s.resource_bundles = {'OrderedSet_privacy' => ['Framework/PrivacyInfo.xcprivacy']}
   s.requires_arc = true
   s.source_files  = "Sources/*.{swift}"
